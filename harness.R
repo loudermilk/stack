@@ -10,10 +10,25 @@ source("stack-xml.R")
 
 # datascience.stackexchange 
 # tags
-dir_src <- DirSource(directory = "data", pattern = SE$files$tags)
+dir_src <- DirSource(directory = "data", pattern = SE$files$comments)
 
 # reader must correspond to pattern above ^
-corpus <- VCorpus(dir_src, readerControl = list(reader = readStackXMLTags))
+corpus <- VCorpus(dir_src, readerControl = list(reader = readStackXMLComments))
+
+# if we don't use $content then NULL it
+corpus[[1]]$content <- NULL
+
+
+toCommentDF <- function(corpus) {
+  data.frame(id = corpus[[1]]$meta$id,
+             postid = corpus[[1]]$meta$postid,
+             score = corpus[[1]]$meta$score,
+             text = corpus[[1]]$meta$text,
+             creationdate = corpus[[1]]$meta$creationdate)
+  # ,  userid = corpus[[1]]$meta$userid
+}
+
+df <- toCommentDF(corpus)
 
 toTagDF <- function(corpus) {
   #need to deal with uneven columns
@@ -40,4 +55,4 @@ plotTopNTags <- function(tags_df, n) {
     geom_bar(stat = "identity")
 }
 
-plotTopNTags(tags_df, 8)
+plotTopNTags(tags_df, 5)
