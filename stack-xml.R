@@ -19,16 +19,16 @@ SE <- StackExchange <- {
 ##################################################################################
 
 StackXMLSpecTag <-
-  list(id = list("attribute", "/tags/row/@Id"),
-       excerpt = list("attribute", "/tags/row/@ExcerptPostId"),
-       wikipostid = list("attribute","/tags/row/@WikiPostId"),
-       counts = list("attribute", "/tags/row/@Count"),
-       tags = list("attribute", "/tags/row/@TagName"))
+  list(Id = list("attribute", "/tags/row/@Id"),
+       ExcerptPostId = list("attribute", "/tags/row/@ExcerptPostId"),
+       WikiPostId = list("attribute","/tags/row/@WikiPostId"),
+       Count = list("attribute", "/tags/row/@Count"),
+       TagName = list("attribute", "/tags/row/@TagName"))
 
 
 readStackXMLTags <-
   readXML(spec = c(StackXMLSpecTag,
-                   list(content = list(StackXMLSpecTag$tags[[1]], StackXMLSpecTag$tags[[2]]))), #/DATA
+                   list(content = list(StackXMLSpecTag$TagName[[1]], StackXMLSpecTag$TagName[[2]]))), #/DATA
           doc = PlainTextDocument())
 
 
@@ -37,16 +37,42 @@ readStackXMLTags <-
 ##################################################################################
 
 StackXMLSpecComment <-
-  list(id = list("attribute", "/comments/row/@Id"),
-       postid = list("attribute", "/comments/row/@PostId"),
-       score = list("attribute","/comments/row/@Score"),
-       text = list("attribute", "/comments/row/@Text"),
-       creationdate = list("attribute", "/comments/row/@CreationDate"),
-       userid = list("attribute", "/comments/row/@UserId"))
+  list(Id = list("attribute", "/comments/row/@Id"),
+       PostId = list("attribute", "/comments/row/@PostId"),
+       Score = list("attribute","/comments/row/@Score"),
+       Text = list("attribute", "/comments/row/@Text"),
+       CreationDate = list("attribute", "/comments/row/@CreationDate"),
+       UserId = list("attribute", "/comments/row/@UserId"))
 #, tags = list("attribute", "/tags/row/@TagName")
 
 readStackXMLComments <-
   readXML(spec = c(StackXMLSpecComment), 
+          doc = PlainTextDocument())
+
+
+##################################################################################
+## POSTS
+##################################################################################
+
+StackXMLSpecPost <-
+  list(Id = list("attribute", "/posts/row/@Id"),
+       PostTypeId = list("attribute", "/posts/row/@PostTypeId"),
+       CreationDate = list("attribute","/posts/row/@CreationDate"),
+       Score = list("attribute", "/posts/row/@Score"),
+       ViewCount = list("attribute", "/posts/row/@ViewCount"),
+       Body = list("attribute", "/posts/row/@Body"),
+       OwnerUserId = list("attribute", "/posts/row/@OwnerUserId"),
+       LastActivityDate = list("attribute", "/posts/row/@LastActivityDate"),
+       Title = list("attribute", "/posts/row/@Title"),
+       Tags = list("attribute", "/posts/row/@Tags"),
+       AnswerCount = list("attribute", "/posts/row/@AnswerCount"),
+       CommentCount = list("attribute", "/posts/row/@CommentCount"),
+       FavoriteCount = list("attribute", "/posts/row/@FavoriteCount"),
+       ClosedDate = list("attribute", "/posts/row/@ClosedDate"))
+
+
+readStackXMLPosts <-
+  readXML(spec = c(StackXMLSpecPost), 
           doc = PlainTextDocument())
 
 
