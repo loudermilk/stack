@@ -18,13 +18,25 @@ mySource <- function(x){
 corpus <- VCorpus(mySource(xml_file))
 meta(corpus[[3298]])
 
-for (i in 1:length(corpus)) {
-  mt <- meta(corpus[[i]])
-  if (mt$DisplayName == "Brandon Loudermilk") {
-    print(paste("found=",i))
-    stop()
+
+#' Exhaustive corpus search for attribute == value
+#' @param corpus
+#' @param attribute (e.g., "DisplayName")
+#' @param value ("Brandon Loudermilk")
+#' @return integer vector
+searchCorpus <- function(corpus, attribute, value){
+  out_list <- c()
+  for (i in 1:length(corpus)) {
+    mt <- meta(corpus[[i]])
+    if (mt[[attribute]] == value) {
+      out_list <- c(out_list, i)
+    }
   }
+  return(out_list)
 }
+
+searchCorpus(corpus, attribute, value)
+
 
 dtm <- DocumentTermMatrix(corpus)
 inspect(dtm[, grepl("Brandon", dtm$dimnames$Terms)])
