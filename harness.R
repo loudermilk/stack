@@ -8,7 +8,7 @@ toTagDF <- function(corpus) {
   #need to deal with uneven columns
   data.frame(Id = corpus[[1]]$meta$Id,
              TagName = corpus[[1]]$meta$TagName,
-             Count = corpus[[1]]$meta$Count)s
+             Count = corpus[[1]]$meta$Count)
   # excerpt = corpus[[1]]$meta$excerpt
   # wiki = corpus[[1]]$meta$wikipostid
 }
@@ -42,19 +42,34 @@ toCommentDF <- function(corpus) {
   # ,  userid = corpus[[1]]$meta$userid
 }
 
+toUserDF <- function(corpus) {
+  data.frame(Id = corpus[[1]]$meta$Id,
+             Reputation = corpus[[1]]$meta$Reputation,
+             CreationDate = corpus[[1]]$meta$CreationDate,
+             DisplayName = corpus[[1]]$meta$DisplayName,
+             LastAccessDate = corpus[[1]]$meta$LastAccessDate,
+             #WebsiteUrl = corpus[[1]]$meta$WebsiteUrl,
+             #Location = corpus[[1]]$meta$Location,
+             #AboutMe = corpus[[1]]$meta$AboutMe,
+             Views = corpus[[1]]$meta$Views,
+             UpVotes = corpus[[1]]$meta$UpVotes,
+             DownVotes = corpus[[1]]$meta$DownVotes)
+             #AccountId = corpus[[1]]$meta$AccountId) #off by 2
+}
+
 
 # datascience.stackexchange 
 # tags, comments, posts
-dir_src <- DirSource(directory = "data", pattern = SE$files$tags)
+dir_src <- DirSource(directory = "data", pattern = SE$files$users)
 
 # reader must correspond to pattern above ^
-corpus <- VCorpus(dir_src, readerControl = list(reader = readStackXMLTags))
-
+corpus <- VCorpus(dir_src, readerControl = list(reader = readStackXMLUsers))
 # if we don't use $content then NULL it
 corpus[[1]]$content <- NULL
 
-df <- toTagDF(corpus)
-View(head(df))
+corpus[[1]]$meta$AboutMe
+#df <- toTagDF(corpus)
+#View(head(df))
 
 
 

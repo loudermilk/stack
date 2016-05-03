@@ -27,8 +27,7 @@ StackXMLSpecTag <-
 
 
 readStackXMLTags <-
-  readXML(spec = c(StackXMLSpecTag,
-                   list(content = list(StackXMLSpecTag$TagName[[1]], StackXMLSpecTag$TagName[[2]]))), #/DATA
+  readXML(spec = c(StackXMLSpecTag), 
           doc = PlainTextDocument())
 
 
@@ -73,6 +72,29 @@ StackXMLSpecPost <-
 
 readStackXMLPosts <-
   readXML(spec = c(StackXMLSpecPost), 
+          doc = PlainTextDocument())
+
+##################################################################################
+## USERS
+##################################################################################
+
+StackXMLSpecUser <-
+  list(Id = list("attribute", "/users/row/@Id"),
+       Reputation = list("attribute", "/users/row/@Reputation"),
+       CreationDate = list("attribute","/users/row/@CreationDate"),
+       DisplayName = list("attribute", "/users/row/@DisplayName"),
+       LastAccessDate = list("attribute", "/users/row/@LastAccessDate"),
+       WebsiteUrl = list("attribute", "/users/row/@WebsiteUrl"),
+       Location = list("attribute", "/users/row/@Location"),
+       AboutMe = list("attribute", "/users/row/@AboutMe"),
+       Views = list("attribute", "/users/row/@Views"),
+       UpVotes = list("attribute", "/users/row/@UpVotes"),
+       DownVotes = list("attribute", "/users/row/@DownVotes"),
+       AccountId = list("attribute", "/users/row/@AccountId"))
+
+
+readStackXMLUsers <-
+  readXML(spec = c(StackXMLSpecUser), 
           doc = PlainTextDocument())
 
 
