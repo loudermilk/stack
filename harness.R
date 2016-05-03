@@ -1,73 +1,41 @@
 library(tm)
 source("stack-xml.R")
 
-## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-## !!! ONLY FOCUS ON TAGS FOR NOW
-## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-toTagDF <- function(corpus) {
-  #need to deal with uneven columns
-  data.frame(Id = corpus[[1]]$meta$Id,
-             TagName = corpus[[1]]$meta$TagName,
-             Count = corpus[[1]]$meta$Count)
-  # excerpt = corpus[[1]]$meta$excerpt
-  # wiki = corpus[[1]]$meta$wikipostid
+##
+## Use this if you want to process multiple files
+# dir_src <- DirSource(directory = "data", pattern = SE$files$tags)
+
+xml_file <- "data/Users.xml"
+
+
+
+mySource <- function(x){
+  XMLSource(x, function(tree) XML::xmlChildren(XML::xmlRoot(tree)), 
+            readStackXMLUsers)
+} 
+
+
+corpus <- VCorpus(mySource(xml_file))
+meta(corpus[[3298]])
+
+for (i in 1:length(corpus)) {
+  mt <- meta(corpus[[i]])
+  if (mt$DisplayName == "Brandon Loudermilk") {
+    print(paste("found=",i))
+    stop()
+  }
 }
 
-toPostDF <- function(corpus) {
-  data.frame(Id = corpus[[1]]$meta$Id,
-             PostTypeId = corpus[[1]]$meta$PostTypeId,
-             CreationDate = corpus[[1]]$meta$CreationDate,
-             Score = corpus[[1]]$meta$Score,
-             Body = corpus[[1]]$meta$Body)
-#   length(corpus[[1]]$meta$viewcount)
-#   length(corpus[[1]]$meta$body)
-#   length(corpus[[1]]$meta$owneruserid)
-#   length(corpus[[1]]$meta$lastactivitydate)
-#   length(corpus[[1]]$meta$title)
-#   length(corpus[[1]]$meta$tags)
-#   length(corpus[[1]]$meta$answercount)
-#   length(corpus[[1]]$meta$commentcount)
-#   length(corpus[[1]]$meta$favoritecount)
-#   length(corpus[[1]]$meta$closeddate)
-}
+dtm <- DocumentTermMatrix(corpus)
+inspect(dtm[, grepl("Brandon", dtm$dimnames$Terms)])
 
-
-
-toCommentDF <- function(corpus) {
-  data.frame(Id = corpus[[1]]$meta$Id,
-             PostId = corpus[[1]]$meta$PostId,
-             Score = corpus[[1]]$meta$Score,
-             Text = corpus[[1]]$meta$Text,
-             CreationDate = corpus[[1]]$meta$CreationDate)
-  # ,  userid = corpus[[1]]$meta$userid
-}
-
-toUserDF <- function(corpus) {
-  data.frame(Id = corpus[[1]]$meta$Id,
-             Reputation = corpus[[1]]$meta$Reputation,
-             CreationDate = corpus[[1]]$meta$CreationDate,
-             DisplayName = corpus[[1]]$meta$DisplayName,
-             LastAccessDate = corpus[[1]]$meta$LastAccessDate,
-             #WebsiteUrl = corpus[[1]]$meta$WebsiteUrl,
-             #Location = corpus[[1]]$meta$Location,
-             #AboutMe = corpus[[1]]$meta$AboutMe,
-             Views = corpus[[1]]$meta$Views,
-             UpVotes = corpus[[1]]$meta$UpVotes,
-             DownVotes = corpus[[1]]$meta$DownVotes)
-             #AccountId = corpus[[1]]$meta$AccountId) #off by 2
-}
-
-
-# datascience.stackexchange 
-# tags, comments, posts
-dir_src <- DirSource(directory = "data", pattern = SE$files$users)
-
+dtm$dimnames$Terms
 # reader must correspond to pattern above ^
-corpus <- VCorpus(dir_src, readerControl = list(reader = readStackXMLUsers))
+#corpus <- VCorpus(dir_src, readerControl = list(reader = readStackXMLUsers))
 # if we don't use $content then NULL it
-corpus[[1]]$content <- NULL
+#corpus[[1]]$content <- NULL
 
-corpus[[1]]$meta$AboutMe
+#corpus[[1]]$meta$AboutMe
 #df <- toTagDF(corpus)
 #View(head(df))
 

@@ -19,11 +19,11 @@ SE <- StackExchange <- {
 ##################################################################################
 
 StackXMLSpecTag <-
-  list(Id = list("attribute", "/tags/row/@Id"),
-       ExcerptPostId = list("attribute", "/tags/row/@ExcerptPostId"),
-       WikiPostId = list("attribute","/tags/row/@WikiPostId"),
-       Count = list("attribute", "/tags/row/@Count"),
-       TagName = list("attribute", "/tags/row/@TagName"))
+  list(Id = list("attribute", "/row/@Id"),
+       ExcerptPostId = list("attribute", "/row/@ExcerptPostId"),
+       WikiPostId = list("attribute","/row/@WikiPostId"),
+       Count = list("attribute", "/row/@Count"),
+       TagName = list("attribute", "/row/@TagName"))
 
 
 readStackXMLTags <-
@@ -36,13 +36,13 @@ readStackXMLTags <-
 ##################################################################################
 
 StackXMLSpecComment <-
-  list(Id = list("attribute", "/comments/row/@Id"),
-       PostId = list("attribute", "/comments/row/@PostId"),
-       Score = list("attribute","/comments/row/@Score"),
-       Text = list("attribute", "/comments/row/@Text"),
-       CreationDate = list("attribute", "/comments/row/@CreationDate"),
-       UserId = list("attribute", "/comments/row/@UserId"))
-#, tags = list("attribute", "/tags/row/@TagName")
+  list(Id = list("attribute", "/row/@Id"),
+       PostId = list("attribute", "/row/@PostId"),
+       Score = list("attribute","/row/@Score"),
+       Text = list("attribute", "/row/@Text"),
+       CreationDate = list("attribute", "/row/@CreationDate"),
+       UserId = list("attribute", "/row/@UserId"))
+
 
 readStackXMLComments <-
   readXML(spec = c(StackXMLSpecComment), 
@@ -54,20 +54,20 @@ readStackXMLComments <-
 ##################################################################################
 
 StackXMLSpecPost <-
-  list(Id = list("attribute", "/posts/row/@Id"),
-       PostTypeId = list("attribute", "/posts/row/@PostTypeId"),
-       CreationDate = list("attribute","/posts/row/@CreationDate"),
-       Score = list("attribute", "/posts/row/@Score"),
-       ViewCount = list("attribute", "/posts/row/@ViewCount"),
-       Body = list("attribute", "/posts/row/@Body"),
-       OwnerUserId = list("attribute", "/posts/row/@OwnerUserId"),
-       LastActivityDate = list("attribute", "/posts/row/@LastActivityDate"),
-       Title = list("attribute", "/posts/row/@Title"),
-       Tags = list("attribute", "/posts/row/@Tags"),
-       AnswerCount = list("attribute", "/posts/row/@AnswerCount"),
-       CommentCount = list("attribute", "/posts/row/@CommentCount"),
-       FavoriteCount = list("attribute", "/posts/row/@FavoriteCount"),
-       ClosedDate = list("attribute", "/posts/row/@ClosedDate"))
+  list(Id = list("attribute", "/row/@Id"),
+       PostTypeId = list("attribute", "/row/@PostTypeId"),
+       CreationDate = list("attribute","/row/@CreationDate"),
+       Score = list("attribute", "/row/@Score"),
+       ViewCount = list("attribute", "/row/@ViewCount"),
+       Body = list("attribute", "/row/@Body"),
+       OwnerUserId = list("attribute", "/row/@OwnerUserId"),
+       LastActivityDate = list("attribute", "/row/@LastActivityDate"),
+       Title = list("attribute", "/row/@Title"),
+       Tags = list("attribute", "/row/@Tags"),
+       AnswerCount = list("attribute", "/row/@AnswerCount"),
+       CommentCount = list("attribute", "/row/@CommentCount"),
+       FavoriteCount = list("attribute", "/row/@FavoriteCount"),
+       ClosedDate = list("attribute", "/row/@ClosedDate"))
 
 
 readStackXMLPosts <-
@@ -79,22 +79,22 @@ readStackXMLPosts <-
 ##################################################################################
 
 StackXMLSpecUser <-
-  list(Id = list("attribute", "/users/row/@Id"),
-       Reputation = list("attribute", "/users/row/@Reputation"),
-       CreationDate = list("attribute","/users/row/@CreationDate"),
-       DisplayName = list("attribute", "/users/row/@DisplayName"),
-       LastAccessDate = list("attribute", "/users/row/@LastAccessDate"),
-       WebsiteUrl = list("attribute", "/users/row/@WebsiteUrl"),
-       Location = list("attribute", "/users/row/@Location"),
-       AboutMe = list("attribute", "/users/row/@AboutMe"),
-       Views = list("attribute", "/users/row/@Views"),
-       UpVotes = list("attribute", "/users/row/@UpVotes"),
-       DownVotes = list("attribute", "/users/row/@DownVotes"),
-       AccountId = list("attribute", "/users/row/@AccountId"))
+  list(Id = list("attribute", "/row/@Id"),
+       Reputation = list("attribute", "/row/@Reputation"),
+       CreationDate = list("attribute","/row/@CreationDate"),
+       DisplayName = list("attribute", "/row/@DisplayName"),
+       LastAccessDate = list("attribute", "/row/@LastAccessDate"),
+       WebsiteUrl = list("attribute", "/row/@WebsiteUrl"),
+       Location = list("attribute", "/row/@Location"),
+       #AboutMe = list("attribute", "/row/@AboutMe"),
+       Views = list("attribute", "/row/@Views"),
+       UpVotes = list("attribute", "/row/@UpVotes"),
+       DownVotes = list("attribute", "/row/@DownVotes"),
+       AccountId = list("attribute", "/row/@AccountId"))
 
 
 readStackXMLUsers <-
-  readXML(spec = c(StackXMLSpecUser), 
+  readXML(spec = c(StackXMLSpecUser,
+                   list(content=list("attribute", "/row/@AboutMe"))), 
           doc = PlainTextDocument())
-
 
