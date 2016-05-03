@@ -5,18 +5,43 @@ source("stack-xml.R")
 ## Use this if you want to process multiple files
 # dir_src <- DirSource(directory = "data", pattern = SE$files$tags)
 
-xml_file <- "data/Users.xml"
+file_name <- xml_file <- "data/Users.xml"
+reader <- readStackXMLUsers
 
 
 
-mySource <- function(x){
-  XMLSource(x, function(tree) XML::xmlChildren(XML::xmlRoot(tree)), 
-            readStackXMLUsers)
-} 
+SE <- list(Tags = list(file_name = "data/Tags.xml", reader = readStackXMLTags),
+           Users = list(file_name = "data/Users.xml", reader = readStackXMLUsers))
 
 
-corpus <- VCorpus(mySource(xml_file))
-meta(corpus[[3298]])
+type <- "Tags"
+cc <- newSECorpus(type)
+
+
+
+newSECorpus <- function(type) {
+  f <- SE[[type]]$file_name
+  r <- SE[[type]]$reader
+  createCorpus(f, r)
+}
+
+#' Create a corpus from file_name using reader
+#' @param file_name character
+#' @param reader
+#' 
+createCorpus <- function(file_name, reader) {
+  mySource <- function(x){
+    XMLSource(x, function(tree) XML::xmlChildren(XML::xmlRoot(tree)), 
+              reader)
+  } 
+  corpus <- VCorpus(mySource(file_name))
+  return(corpus)
+}
+
+
+corpus <- createCorpus(file_name, reader)
+
+content(corpus[[3298]])
 
 
 #' Exhaustive corpus search for attribute == value

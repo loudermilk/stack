@@ -1,19 +1,4 @@
 
-SE <- StackExchange <- {
-  se <- list()
-  class(se) <- "StackExchange"
-  se$files <- list()
-  se$files$badges <- "Badges.xml"
-  se$files$comments <- "Comments.xml"
-  se$files$posthistory <- "PostHistory.xml"
-  se$files$postlinks <- "PostLinks.xml"
-  se$files$posts <- "Posts.xml"
-  se$files$tags <- "Tags.xml"
-  se$files$users <- "Users.xml"
-  se$files$votes <- "Votes.xml"
-  se
-}
-
 ##################################################################################
 ## TAGS
 ##################################################################################
