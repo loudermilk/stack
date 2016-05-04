@@ -11,11 +11,12 @@ reader <- readStackXMLUsers
 
 
 SE <- list(Tags = list(file_name = "data/Tags.xml", reader = readStackXMLTags),
-           Users = list(file_name = "data/Users.xml", reader = readStackXMLUsers))
+           Users = list(file_name = "data/Users.xml", reader = readStackXMLUsers),
+           Posts = list(file_name = "data/Posts.xml", reader = readStackXMLPosts),
+           Comments = list(file_name = "data/Comments.xml", reader = readStackXMLComments))
 
 
-type <- "Tags"
-cc <- newSECorpus(type)
+
 
 
 
@@ -38,6 +39,9 @@ createCorpus <- function(file_name, reader) {
   return(corpus)
 }
 
+
+type <- "Comments"
+cc <- newSECorpus(type)
 
 corpus <- createCorpus(file_name, reader)
 

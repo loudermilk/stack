@@ -24,13 +24,14 @@ StackXMLSpecComment <-
   list(Id = list("attribute", "/row/@Id"),
        PostId = list("attribute", "/row/@PostId"),
        Score = list("attribute","/row/@Score"),
-       Text = list("attribute", "/row/@Text"),
+       #Text = list("attribute", "/row/@Text"),
        CreationDate = list("attribute", "/row/@CreationDate"),
        UserId = list("attribute", "/row/@UserId"))
 
 
 readStackXMLComments <-
-  readXML(spec = c(StackXMLSpecComment), 
+  readXML(spec = c(StackXMLSpecComment,
+                   list(content=list("attribute", "/row/@Text"))), 
           doc = PlainTextDocument())
 
 
@@ -44,7 +45,7 @@ StackXMLSpecPost <-
        CreationDate = list("attribute","/row/@CreationDate"),
        Score = list("attribute", "/row/@Score"),
        ViewCount = list("attribute", "/row/@ViewCount"),
-       Body = list("attribute", "/row/@Body"),
+       #Body = list("attribute", "/row/@Body"),
        OwnerUserId = list("attribute", "/row/@OwnerUserId"),
        LastActivityDate = list("attribute", "/row/@LastActivityDate"),
        Title = list("attribute", "/row/@Title"),
@@ -56,7 +57,8 @@ StackXMLSpecPost <-
 
 
 readStackXMLPosts <-
-  readXML(spec = c(StackXMLSpecPost), 
+  readXML(spec = c(StackXMLSpecPost,
+                   list(content=list("attribute", "/row/@Body"))), 
           doc = PlainTextDocument())
 
 ##################################################################################
