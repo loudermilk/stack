@@ -5,15 +5,15 @@ source("stack-xml.R")
 ## Use this if you want to process multiple files
 # dir_src <- DirSource(directory = "data", pattern = SE$files$tags)
 
-file_name <- xml_file <- "data/Users.xml"
-reader <- readStackXMLUsers
-
-
 
 SE <- list(Tags = list(file_name = "data/Tags.xml", reader = readStackXMLTags),
            Users = list(file_name = "data/Users.xml", reader = readStackXMLUsers),
            Posts = list(file_name = "data/Posts.xml", reader = readStackXMLPosts),
-           Comments = list(file_name = "data/Comments.xml", reader = readStackXMLComments))
+           Comments = list(file_name = "data/Comments.xml", reader = readStackXMLComments),
+           Votes = list(file_name = "data/Votes.xml", reader = readStackXMLVotes),
+           PostLinks = list(file_name = "data/PostLinks.xml", reader = readStackXMLPostLinks),
+           PostHistorys = list(file_name = "data/PostHistory.xml", reader = readStackXMLPostHistorys),
+           Badges = list(file_name = "data/Badges.xml", reader = readStackXMLBadges))
 
 
 
@@ -38,14 +38,21 @@ createCorpus <- function(file_name, reader) {
   corpus <- VCorpus(mySource(file_name))
   return(corpus)
 }
-
-
-type <- "Comments"
+##
+## Method #1
+##
+type <- "Badges"
 cc <- newSECorpus(type)
+corpus <- cc
+meta(corpus[[1]])
 
+##
+## Method #2
+##
+file_name <- xml_file <- "data/PostLinks.xml"
+reader <- readStackXMLPostLinks
 corpus <- createCorpus(file_name, reader)
-
-content(corpus[[3298]])
+meta(corpus[[1]])
 
 
 #' Exhaustive corpus search for attribute == value

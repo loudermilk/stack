@@ -85,3 +85,70 @@ readStackXMLUsers <-
                    list(content=list("attribute", "/row/@AboutMe"))), 
           doc = PlainTextDocument())
 
+##################################################################################
+## VOTES
+##################################################################################
+
+StackXMLSpecVote <-
+  list(Id = list("attribute", "/row/@Id"),
+       PostId = list("attribute", "/row/@PostId"),
+       VoteTypeId = list("attribute","/row/@VoteTypeId"),
+       CreationDate = list("attribute", "/row/@CreationDate"))
+
+
+readStackXMLVotes <-
+  readXML(spec = c(StackXMLSpecVote), 
+          doc = PlainTextDocument())
+
+
+##################################################################################
+## POSTLINKS
+##################################################################################
+
+StackXMLSpecPostLink <-
+  list(Id = list("attribute", "/row/@Id"),
+       CreationDate = list("attribute", "/row/@CreationDate"),
+       PostId = list("attribute","/row/@PostId"),
+       RelatedPostId = list("attribute", "/row/@RelatedPostId"),
+       LinkTypeId = list("attribute", "/row/@LinkTypeId"))
+
+
+readStackXMLPostLinks <-
+  readXML(spec = c(StackXMLSpecPostLink), 
+          doc = PlainTextDocument())
+
+
+##################################################################################
+## POSTHISTORY
+##################################################################################
+
+StackXMLSpecPostHistory <-
+  list(Id = list("attribute", "/row/@Id"),
+       PostHistoryTypeId = list("attribute", "/row/@PostHistoryTypeId"),
+       PostId = list("attribute","/row/@PostId"),
+       RevisionGUID = list("attribute", "/row/@RevisionGUID"),
+       CreationDate = list("attribute", "/row/@CreationDate"),
+       UserId = list("attribute", "/row/@UserId"))
+       #Text = list("attribute", "/row/@Text"),
+
+readStackXMLPostHistorys <-
+  readXML(spec = c(StackXMLSpecPostHistory,
+                   list(content=list("attribute", "/row/@Text"))), 
+          doc = PlainTextDocument())
+
+##################################################################################
+## BADGES
+##################################################################################
+
+StackXMLSpecBadge <-
+  list(Id = list("attribute", "/row/@Id"),
+       UserId = list("attribute", "/row/@UserId"),
+       Name = list("attribute","/row/@Name"),
+       Date = list("attribute", "/row/@Date"),
+       Class = list("attribute", "/row/@Class"),
+       TagBased = list("attribute", "/row/@TagBased"))
+
+
+readStackXMLBadges <-
+  readXML(spec = c(StackXMLSpecBadge), 
+          doc = PlainTextDocument())
