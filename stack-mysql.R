@@ -4,21 +4,19 @@
 #
 # Assumes: 
 # (1) MySQL server instance running
-#     from prompt: $mysql -u root -p
+#     $ mysql -u root -p
 # (2) has a database called 'stackexchange'
 #     mysql> CREATE DATABASE stackexchange;
 #     mysql> USE stackexchange;
 # (3) user privileges set
 #     mysql> CREATE USER 'foobar'@'localhost' IDENTIFIED BY 'password'
 #     mysql> GRANT ALL PRIVILEGES ON *.* TO foobar@localhost IDENTIFIED BY 'password' WITH GRANT OPTION;
-#    from cmd prompt:$ mysql --host=localhost --user=foobar --password=password stackexchange
+#     $ mysql --host=localhost --user=foobar --password=password stackexchange
 #
-# grant all privileges on *.* to bill@localhost identified by 'passpass' with grant option;
-
 
 library(RMySQL)
 
-con <- dbConnect(MySQL(),
+DEF_CONNECTION <- dbConnect(MySQL(),
                  user = 'brandon',
                  password = 'password',
                  host = 'localhost',
@@ -58,7 +56,7 @@ corpusToDF <- function(corpus) {
     doc <- corpus[[i]]
     m <- meta(doc)
     char_vec <- unlist(m)
-    print(length(char_vec))
+
     
     ## normalize char_vec according to master_vec
     new_vec <- master_vec
@@ -77,18 +75,4 @@ corpusToDF <- function(corpus) {
   df <- as.data.frame(df)
   return(df)
 }
-
-
-
-
-
-
-
-
-#dbWriteTable(conn = con, name = 'potluck', value = foo, overwrite = T, row.names = FALSE, append = FALSE)
-
-
-dbListTables(con)
-
-#INSERT INTO `potluck` (`id`,`name`,`food`,`confirmed`,`signup_date`) VALUES (NULL, "Sandy", "Key Lime Tarts","N", '2012-04-14')
 

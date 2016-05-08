@@ -42,23 +42,41 @@ createCorpus <- function(file_name, reader) {
 ##
 ## Method #1
 ##
-type <- "Posts"
-cc <- newSECorpus(type)
-corpus <- cc[1:4]
+# type <- "Posts"
+# cc <- newSECorpus(type)
+# corpus <- cc[1:4]
+# 
+# name <- "posts"
+# data <- corpusToDF(corpus)
+# data$id <- NULL # SQL isn't case sensitive
+# createSQLTable(con = DEF_CONNECTION, name = name, data = data)
 
-name <- "posts"
-data <- corpusToDF(corpus)
-data$id <- NULL # SQL isn't case sensitive
-createSQLTable(con = con, name = name, data = data)
-
+createStackExchangeSQLTables <- function() {
+  newSQLTable <- function(type) {
+    print(paste("Creating table...", type))
+    corpus <- newSECorpus(type)
+    data <- corpusToDF(corpus)
+    data$id <- NULL # SQL isn't case sensitive
+    createSQLTable(con = DEF_CONNECTION, name = type, data = data)
+  }
+  
+  newSQLTable("Tags")
+  newSQLTable("Users")
+  newSQLTable("Posts")
+  newSQLTable("Comments")
+  newSQLTable("Votes")
+  newSQLTable("PostLinks")
+  newSQLTable("PostHistorys")
+  newSQLTable("Badges")
+}
 
 ##
 ## Method #2
 ##
-file_name <- xml_file <- "data/PostLinks.xml"
-reader <- readStackXMLPostLinks
-corpus <- createCorpus(file_name, reader)
-meta(corpus[[1]])
+# file_name <- xml_file <- "data/PostLinks.xml"
+# reader <- readStackXMLPostLinks
+# corpus <- createCorpus(file_name, reader)
+# meta(corpus[[1]])
 
 
 #' Exhaustive corpus search for attribute == value
@@ -77,41 +95,7 @@ searchCorpus <- function(corpus, attribute, value){
   return(out_list)
 }
 
-searchCorpus(corpus, attribute, value)
-
-
-dtm <- DocumentTermMatrix(corpus)
-inspect(dtm[, grepl("Brandon", dtm$dimnames$Terms)])
-
-dtm$dimnames$Terms
-# reader must correspond to pattern above ^
-#corpus <- VCorpus(dir_src, readerControl = list(reader = readStackXMLUsers))
-# if we don't use $content then NULL it
-#corpus[[1]]$content <- NULL
-
-#corpus[[1]]$meta$AboutMe
-#df <- toTagDF(corpus)
-#View(head(df))
-
-
-
-# ## Create a tags_df 
-# ## How to access XML meta data
-# corpus[[1]]$meta$tags
-# tags <- corpus[[1]]$meta$tags
-# counts <- as.integer(corpus[[1]]$meta$counts)
-# tags_df <- data.frame(tags = tags, counts = counts, stringsAsFactors = FALSE)
-# 
-#
-# Need to refactor plotTopNTags
-#
-# #' Plot bar chart of top n tags
-# plotTopNTags <- function(tags_df, n) {
-#   require(ggplot2)
-#   data <- tags_df[order(-counts),] 
-#   sub_data <- data[1:n,]
-#   ggplot(sub_data, aes(x = reorder(tags, -counts), y = counts)) +
-#     geom_bar(stat = "identity")
-# }
-# 
-# plotTopNTags(tags_df, 5)
+# searchCorpus(corpus, attribute, value)
+# dtm <- DocumentTermMatrix(corpus)
+# inspect(dtm[, grepl("Brandon", dtm$dimnames$Terms)])
+# dtm$dimnames$Terms
