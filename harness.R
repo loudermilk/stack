@@ -1,5 +1,6 @@
 library(tm)
 source("stack-xml.R")
+source("stack-mysql.R")
 
 ##
 ## Use this if you want to process multiple files
@@ -43,8 +44,13 @@ createCorpus <- function(file_name, reader) {
 ##
 type <- "Posts"
 cc <- newSECorpus(type)
-corpus <- cc
-meta(corpus[[1]])
+corpus <- cc[1:4]
+
+name <- "posts"
+data <- corpusToDF(corpus)
+data$id <- NULL # SQL isn't case sensitive
+createSQLTable(con = con, name = name, data = data)
+
 
 ##
 ## Method #2

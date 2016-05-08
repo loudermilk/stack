@@ -4,32 +4,25 @@
 #
 # Assumes: 
 # (1) MySQL server instance running
+#     from prompt: $mysql -u root -p
 # (2) has a database called 'stackexchange'
 #     mysql> CREATE DATABASE stackexchange;
 #     mysql> USE stackexchange;
 # (3) user privileges set
-#     mysql> grant all privileges on *.* to bill@localhost identified by 'passpass' with grant option;
-# from cmd - mysql --host=localhost --user=bill --password=passpass events
+#     mysql> CREATE USER 'foobar'@'localhost' IDENTIFIED BY 'password'
+#     mysql> GRANT ALL PRIVILEGES ON *.* TO foobar@localhost IDENTIFIED BY 'password' WITH GRANT OPTION;
+#    from cmd prompt:$ mysql --host=localhost --user=foobar --password=password stackexchange
 #
 # grant all privileges on *.* to bill@localhost identified by 'passpass' with grant option;
 
 
-install.packages("RMySQL")
 library(RMySQL)
 
-
-
 con <- dbConnect(MySQL(),
-                 user = 'bill',
-                 password = 'passpass',
+                 user = 'brandon',
+                 password = 'password',
                  host = 'localhost',
                  dbname='stackexchange')
-#dbWriteTable(conn = con, name = 'Test', value = as.data.frame(Thurstone))
-
-foo <- data.frame(name = "Pirate King", 
-                  food = "Mutton Biryani", 
-                  confirmed = "Y", 
-                  signup_date = '2016-05-07')
 
 
 createSQLTable <- function(con, name, data) {
@@ -39,10 +32,14 @@ createSQLTable <- function(con, name, data) {
                overwrite = TRUE, 
                row.names = FALSE, 
                append = FALSE)
+  
 }
 
-createSQLTable(con = con, "stuff", data = foo)
 
+#' Create data.frame of meta data from corpus
+#' @param corpus
+#' @return data.frame
+#' 
 corpusToDF <- function(corpus) {
   last <- length(corpus) 
   
@@ -51,12 +48,12 @@ corpusToDF <- function(corpus) {
   ll <- sapply(corpus, function(d) length(unlist(meta(d))))
   indices <- which(max(ll) == ll)
   ref_index <- indices[1]
-
- ## determine number of columns
- ref_doc <- corpus[[ref_index]]
- master_vec <- unlist(meta(ref_doc))
   
-   meta_list <- list()
+  ## determine number of columns
+  ref_doc <- corpus[[ref_index]]
+  master_vec <- unlist(meta(ref_doc))
+  meta_col_headers <- names(master_vec)
+  meta_list <- list()
   for (i in 1:last) {
     doc <- corpus[[i]]
     m <- meta(doc)
@@ -64,7 +61,6 @@ corpusToDF <- function(corpus) {
     print(length(char_vec))
     
     ## normalize char_vec according to master_vec
-    missing_col_names <- setdiff(x = names(master_vec), y = names(char_vec))
     new_vec <- master_vec
     new_vec[1:length(new_vec)] <- NA
     for (j in 1:length(char_vec)) {
@@ -76,12 +72,14 @@ corpusToDF <- function(corpus) {
     meta_list[[i]] <- new_vec
   }
   
-  df <- data.frame(meta_list)
+  df <- t(data.frame(meta_list))
   names(df) <- meta_col_headers
+  df <- as.data.frame(df)
   return(df)
-  #m <- meta(corpus[[1]])
-  #data.frame(text = sapply(corpus, as.character), stringsAsFactors = FALSE)
 }
+
+
+
 
 
 
