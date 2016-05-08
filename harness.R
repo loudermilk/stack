@@ -41,7 +41,7 @@ createCorpus <- function(file_name, reader) {
 ##
 ## Method #1
 ##
-type <- "Badges"
+type <- "Posts"
 cc <- newSECorpus(type)
 corpus <- cc
 meta(corpus[[1]])
