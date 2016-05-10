@@ -80,7 +80,20 @@ doDBStuff <- function(){
   class(foo)
   
   # You can fetch all results:
-  res <- dbSendQuery(DEF_CONNECTION, "SELECT * FROM mtcars WHERE cyl = 4")
+  #query
+  
+  ## GET ALL QUESTIONS
+  q <- "SELECT Id, OwnerUserId FROM Posts WHERE PostTypeId='1' LIMIT 10;"
+  
+  ## GET USER INFO FOR POST NODE
+  q <- "SELECT p.Id, p.OwnerUserId, u.DisplayName, u.Reputation, u.CreationDate 
+        FROM Posts as p, Users as u 
+        WHERE p.Id='7' 
+          AND p.OwnerUserId=u.Id;"
+  
+  q <- "SELECT p.ParentId FROM Posts as p WHERE p.ParentId='7'"
+  
+  res <- dbSendQuery(DEF_CONNECTION, q)
   dbFetch(res)
   dbClearResult(res)
   
