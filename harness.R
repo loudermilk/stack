@@ -70,6 +70,32 @@ createStackExchangeSQLTables <- function() {
   newSQLTable("Badges")
 }
 
+doDBStuff <- function(){
+  dbListTables(DEF_CONNECTION)
+  dbWriteTable(DEF_CONNECTION, "mtcars", mtcars)
+  dbListTables(DEF_CONNECTION)
+
+  dbListFields(DEF_CONNECTION, "mtcars")
+  foo <- dbReadTable(DEF_CONNECTION, "mtcars")
+  class(foo)
+  
+  # You can fetch all results:
+  res <- dbSendQuery(DEF_CONNECTION, "SELECT * FROM mtcars WHERE cyl = 4")
+  dbFetch(res)
+  dbClearResult(res)
+  
+  # Or a chunk at a time
+  res <- dbSendQuery(DEF_CONNECTION, "SELECT * FROM mtcars WHERE cyl = 4")
+  while(!dbHasCompleted(res)){
+    chunk <- dbFetch(res, n = 5)
+    print(nrow(chunk))
+  }
+  # Clear the result
+  dbClearResult(res)
+  
+  # Disconnect from the database
+  dbDisconnect(DEF_CONNECTION)  
+}
 ##
 ## Method #2
 ##
