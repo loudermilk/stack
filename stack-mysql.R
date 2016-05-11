@@ -18,7 +18,7 @@ library(RMySQL)
 
 DEF_CONNECTION <- dbConnect(MySQL(),
                  user = 'brandon',
-                 password = 'Hankuk1!',
+                 password = 'password',
                  host = 'localhost',
                  dbname='stackexchange')
 

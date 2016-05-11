@@ -42,6 +42,7 @@ readStackXMLComments <-
 StackXMLSpecPost <-
   list(Id = list("attribute", "/row/@Id"),
        PostTypeId = list("attribute", "/row/@PostTypeId"),
+       AcceptedAnswerId = list("attribute", "/row/@AcceptedAnswerId"),
        CreationDate = list("attribute","/row/@CreationDate"),
        Score = list("attribute", "/row/@Score"),
        ViewCount = list("attribute", "/row/@ViewCount"),
@@ -55,7 +56,7 @@ StackXMLSpecPost <-
        FavoriteCount = list("attribute", "/row/@FavoriteCount"),
        ClosedDate = list("attribute", "/row/@ClosedDate"))
 
-
+#AcceptedAnswerId
 readStackXMLPosts <-
   readXML(spec = c(StackXMLSpecPost,
                    list(content=list("attribute", "/row/@Body"))), 
@@ -151,4 +152,19 @@ StackXMLSpecBadge <-
 
 readStackXMLBadges <-
   readXML(spec = c(StackXMLSpecBadge), 
+          doc = PlainTextDocument())
+
+
+##################################################################################
+## Foo
+##################################################################################
+
+StackXMLSpecFoo <-
+  list(Id = list("attribute", "/row/@Id"),
+       A = list("attribute", "/row/@A"),
+       B = list("attribute", "/row/@B"))
+
+#AcceptedAnswerId
+readStackXMLFoos <-
+  readXML(spec = c(StackXMLSpecFoo), 
           doc = PlainTextDocument())

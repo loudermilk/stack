@@ -18,9 +18,6 @@ SE <- list(Tags = list(file_name = "data/Tags.xml", reader = readStackXMLTags),
 
 
 
-
-
-
 newSECorpus <- function(type) {
   f <- SE[[type]]$file_name
   r <- SE[[type]]$reader
