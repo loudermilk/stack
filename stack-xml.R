@@ -1,3 +1,15 @@
+## stack-xml.R
+## 
+## Defines the XML structure of the stackexchange data source files (*.xml):
+## Votes.xml
+## Users 
+## Tags 
+## Posts 
+## PostLinks 
+## PostHistory 
+## Comments 
+## Badges
+##
 
 ##################################################################################
 ## TAGS
