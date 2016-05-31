@@ -52,7 +52,7 @@ createCorpus <- function(file_name, reader) {
 #' @description Creates all SE SQL tables 
 #' 
 createStackExchangeSQLTables <- function() {
-  
+
   #' Create new SQL table
   #' @param type character
   #' @description Given a supported SE table type
@@ -62,7 +62,11 @@ createStackExchangeSQLTables <- function() {
   newSQLTable <- function(type) {
     print(paste("Creating table...", type))
     corpus <- newSECorpus(type)
-    data <- corpusToDF(corpus)
+    if (type %in% c("Comments", "Posts", "Users", "PostHistorys")) {
+      data <- corpusToDF(corpus, add_content = TRUE)
+    } else {
+      data <- corpusToDF(corpus)
+    }
     data$id <- NULL # SQL isn't case sensitive (ID/id the same)
     createSQLTable(con = DEF_CONNECTION, name = type, data = data)
   }
@@ -168,8 +172,6 @@ corpusToDF <- function(corpus, add_content = FALSE) {
     m <- meta(doc)
     char_vec <- unlist(m)
     
-    
-    
     ## normalize char_vec according to master_vec
     new_vec <- master_vec
     new_vec[1:length(new_vec)] <- NA
@@ -181,7 +183,11 @@ corpusToDF <- function(corpus, add_content = FALSE) {
     
     if (add_content){
       content <- content(doc)
-      new_vec["Content"] <- content
+      if (length(content) > 0) {
+        new_vec["Content"] <- content
+      } else {
+        new_vec["Content"] <- NA
+      }
     }
     
     meta_list[[i]] <- new_vec
@@ -207,7 +213,7 @@ corpusToDF <- function(corpus, add_content = FALSE) {
 ##
 ## Method #1
 ##
-# type <- "Posts"
+# type <- "Badges"
 # cc <- newSECorpus(type)
 # corpus <- cc[1:4]
 # 
@@ -228,4 +234,7 @@ corpusToDF <- function(corpus, add_content = FALSE) {
 main <- function() {
   createStackExchangeSQLTables()
 }
+
+
+
 
