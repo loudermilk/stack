@@ -12,8 +12,8 @@ Currently developing a collaborative-filter recommendation engine to better matc
  * **ui**: console and file i/o
 
 **Recommendation Engine V2**
-* site: datascience.stackexchange.com
-* goal: Item-based collaborative filter enhanced with item & user tag content
-* matrix: m users x n questions
-* entities: unary answer response (may treat NA as 0 for binary)
-* ui: rudimentary shiny
+* **site**: datascience.stackexchange.com
+* **goal**: Item-based collaborative filter enhanced with item & user tag content
+* **matrix**: m users x n questions
+* **entities**: unary answer response (may treat NA as 0 for binary)
+* **ui**: rudimentary shiny
