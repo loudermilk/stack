@@ -148,7 +148,7 @@ searchCorpus <- function(corpus, attribute, value){
 #' @param corpus
 #' @return data.frame
 #' 
-corpusToDF <- function(corpus) {
+corpusToDF <- function(corpus, add_content = FALSE) {
   last <- length(corpus) 
   
   # assume that the doc with most meta info has *all* the meta info
@@ -158,7 +158,8 @@ corpusToDF <- function(corpus) {
   ref_index <- indices[1]
   
   ## determine number of columns
-  ref_doc <- corpus[[ref_index]]
+  ref_doc <- corpus[[ref_index]] # has most meta-data
+  
   master_vec <- unlist(meta(ref_doc))
   meta_col_headers <- names(master_vec)
   meta_list <- list()
@@ -168,6 +169,7 @@ corpusToDF <- function(corpus) {
     char_vec <- unlist(m)
     
     
+    
     ## normalize char_vec according to master_vec
     new_vec <- master_vec
     new_vec[1:length(new_vec)] <- NA
@@ -175,6 +177,11 @@ corpusToDF <- function(corpus) {
       n <- names(char_vec[j])[1]
       v <- char_vec[j]
       new_vec[n] <- v
+    }
+    
+    if (add_content){
+      content <- content(doc)
+      new_vec["Content"] <- content
     }
     
     meta_list[[i]] <- new_vec
