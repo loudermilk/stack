@@ -1,0 +1,282 @@
+---
+title: "Unit Testing Tutorial"
+author: "Brandon C Loudermilk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{unit-testing-tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+ 
+**Goal**: In order to improve software quality, limit defects, and reduce development effort, the stack prject uses an engineering process called [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development). This vignette will teach you the basics of doing TDD for stack projects.
+ 
+TDD moves unit testing to the beginning of the SDLC, thus bugs are found and fixed early in the cycle, providing a reliable foundation of code upon which to build. Test-driven development relies upon a short development cycle with frequent repetitions.
+ 
+The key unit of TDD is the **unit test**. Martin Fowler enumerates the central constructs of unit tests:
+ 
+> Firstly there is a notion that **unit tests are low-level**, focusing on a small part of the software system. Secondly unit tests are usually written these days by the programmers themselves using their regular tools - the only difference being the **use of some sort of unit testing framework**. Thirdly unit tests are expected to be **significantly faster than other kinds of tests**.
+ 
+Given a needed feature or bug fix (PR), (1) a developer writes a test case that will ensure that a target function works as intended (2) the developer writes a skeleton target function and confirms that the unit test fails. (3) Developer produces the minimum amount of code (i.e. the target function) to (4) pass that test. (5) Developer cleans up code, pushes code to their remote repository and issues a pull request to the master repo.
+
+## Stack Unit Testing Overview
+In order to ensure the integrity and validity of our code base, all source code is accompanied by unit tests. Unit tests are scripts or functions (sometimes accompanied by a small data set) that evaluate individual functions to ensure they calculate and return the correct values or produce the desired side effects.  Each R source file **stack-foo-bar.R** pushed to our repository should be accompanied by a corresponding unit testing script, **test-stack-foo-bar.R**.  Ideally, we should have a test function for every function in the original source file, though in practice the ideal 1-to-1 correspondence is typically relaxed.
+
+In the following examples, we illustrate the tools, techniques, and procedures for writing unit tests for Stack projects.
+ 
+## Getting Started - Installing stack package
+#### **NB:** `testthat` and `tidyr` *must* be installed prior to attempting to install `mepapi` package
+ 
+&nbsp;
+ 
+1. Fork and build the package from [source code in the stack repo](https://github.com/loudermilk/stack.git).
+ 
+
+3. Attach the package to your search path via `library(mepapi)` or explicitly call functions via `mepapi::fun()`.
+ 
+4. Launch the vignette from RStudio `vignette("mep-unit-testing", package="mepapi")`
+ 
+5. To start developing unit tests, install the package [testthat](https://github.com/hadley/testthat) and add it to your search path.
+```{r, warning=FALSE}
+library(testthat)
+```
+ 
+## Use case scenario: function vectorAvg()
+ 
+In this scenario, we are given the following requirement: write a function `vectorAvg` that take a numeric vector as input and which returns the average of those values. Yes, we could trivially accomplish this task by just using the function `base::mean()`, but for illustration purposes we will be writing our own function.
+ 
+### Step-1 - Write skeleton target function and initial unit test
+ 
+Using TDD principles, we will start by writing a skeleton target function, as illustrated in the code snipppet below. NB: to start with, we will just write a stub function that returns a default value numeric(0).
+ 
+```{r}
+# (Step-1a) Write skeleton stub target function
+vectorAvg <- function(x) {
+  x_avg <- numeric(0)
+ 
+  # Implementation code goes here
+  # Calculate the mean and assign to x_avg
+  return(x_avg)
+}
+```
+ 
+Now we need to write our unit test. Pulling up the help pages, to `testthat::test_that()` we observe that the function takes two parameters: `desc` a character description and `code` test code that contains expectations. For `desc` we pass in the name of the target function **"vectorAvg"** and for `code` we will write some R code with expectations that ensure the target function works properly. In the following sections we will illustrate each section of code independentally, concluding with a integrated, finalized, and deployable unit test function
+ 
+In writing unit tests, it is *extremely helpful* to use simple and small data structures that can be calculated by hand in order to craft the expectations. In this example, we will create 5 different vectors of varying classes.
+ 
+```{r, eval=FALSE}
+  # (Step-1b) Write initial unit test
+  # Set a seed for reproducibility if calling random functions
+  set.seed(15)
+ 
+  # (Step-1b.1) of unit test: Create or load dummy data
+  int_vec <- 1:10
+  char_vec <- as.character(letters[1:10])
+  num_vec <- 1.1:10.1
+  logical_vec <- rep(c(TRUE, FALSE), 5)
+  factor_vec <- rep(c("foo", "bar"), 5)
+ 
+```
+ 
+### Step-2 - Run, test, confirm fail
+ 
+Now that we've created the dummy vectors, all we need to do is to pass the vectors to the target function `vectorAvg()` and make assertions/expectations on the results. As illustrated below, the final part of our unit test function involves making assertions that the returned results are what we expected. Of course at this juncture, **we expect our initial assertions to fail**, because we still haven't implemented the body of the target function `vectorAvg()` (i.e. we've only written a skeleton stub that returns numeric(0)).
+ 
+```{r, eval = FALSE}
+ 
+  # (Step-2) Call target functions and confirm fail
+  expect_equal(length(vectorAvg(int_vec)), 1) # We should get a single value
+  expect_equal(vectorAvg(int_vec), 5.5) # mean(1:10) == 5.5
+ 
+  # ...
+  # ... more assertions/expections ...
+  # ... yet more assertions/expectations ...
+ 
+```
+ 
+ 
+### Step-3 - Write target function
+ 
+At this juncture we need to start fleshing out our target function and implementing additional assertions in our unit test. Typically this is an iterative process (e.g., write a couple assertions, implement some target code, see if the assertions pass as expected, then repeat).
+ 
+Let's start by implementing the actual average computation as well as making our target function more robust. When finished, our target function should return the mean for integer/numeric vectors and should issue a `stop()` for all other input types.
+ 
+```{r}
+vectorAvg <- function(x) {
+  x_avg <- numeric(0)
+ 
+  # Ensure correct input parameters are received
+  x_class <- class(x)
+  if ("integer" %in% x_class | "numeric" %in% x_class) {
+    # Calculate the mean and assign to x_avg
+    # Let's implement this by hand...
+    total <- 0
+    for (i in 1:length(x)) {
+      total <- total + x[i]
+    }
+    x_avg <- total/length(x)
+  } else {
+    stop(paste("vectorAvg() does not accept input of type", x_class))
+  }
+  return(x_avg)
+}
+ 
+```
+ 
+### Step-4 - Does unit test pass?
+ 
+With the target function in its current state, we should expect the following to pass:
+ 
+```{r}
+  # Step - 1 of unit test: Create or load dummy data
+  int_vec <- 1:10
+  char_vec <- as.character(letters[1:10])
+  num_vec <- 1.1:10.1
+  logical_vec <- rep(c(TRUE, FALSE), 5)
+  factor_vec <- rep(c("foo", "bar"), 5)
+ 
+  # Step - 2 of unit test: call target and make assertions
+ 
+  # We expect integer and numeric vectors to return scalar numerics of length 1
+  expect_equal(length(vectorAvg(int_vec)), 1) # We should get a single value
+  expect_equal(length(vectorAvg(num_vec)), 1)
+ 
+  # We expect specfic values for above calls
+  expect_equal(vectorAvg(int_vec), 5.5) # mean(1:10) == 5.5
+  expect_equal(vectorAvg(num_vec), 5.6) # mean(1.1:10.1) == 5.6
+ 
+  # We expect errors for vectors of type : character, logical, factor
+  expect_error(vectorAvg(char_vec))
+  expect_error(vectorAvg(logical_vec))
+  expect_error(vectorAvg(factor_vec))
+ 
+```
+ 
+**W00t!!!** - All of our assertions/expectations pass! At this point, let's wrap up all our code as a single block and pass it to function `testthat::test_that(desc, code)`, which takes as input parameters: `desc` a character string (representing the name of the target function e.g., "vectorAvg"), and `code` a block of code the creates dummy, passes it to the target function, and then makes assertions about the expected results.
+ 
+```{r}
+testthat::test_that("vectorAvg", {
+      # Step - 1 of unit test: Create or load dummy data
+  int_vec <- 1:10
+  char_vec <- as.character(letters[1:10])
+  num_vec <- 1.1:10.1
+  logical_vec <- rep(c(TRUE, FALSE), 5)
+  factor_vec <- rep(c("foo", "bar"), 5)
+ 
+  # Step - 2 of unit test: call target and make assertions
+ 
+  # We expect integer and numeric vectors to return scalar numerics of length 1
+  expect_equal(length(vectorAvg(int_vec)), 1) # We should get a single value
+  expect_equal(length(vectorAvg(num_vec)), 1)
+ 
+  # We expect specfic values for above calls
+  expect_equal(vectorAvg(int_vec), 5.5) # mean(1:10) == 5.5
+  expect_equal(vectorAvg(num_vec), 5.6) # mean(1.1:10.1) == 5.6
+ 
+  # We expect errors for vectors of type : character, logical, factor
+  expect_error(vectorAvg(char_vec))
+  expect_error(vectorAvg(logical_vec))
+  expect_error(vectorAvg(factor_vec))
+})
+ 
+```
+ 
+### Step-5 - Clean up code and ensure corner case coverage
+ 
+By this point we have created a minimal unit test for our target function `vectorAvg()`. However, closer inspection reveals that our target function may need additional functionality, perhaps in how it handles NAs. For example, in the current implementation calling `vectorAvg(c(1:9), NA)` will return NA, which may be undesired behavior from an architectural perspective.
+ 
+ 
+```{r}
+  bad_vec <- c(1:9, NA)
+  vectorAvg(bad_vec)
+```
+ 
+In this use case, let's suppose that our requirements require more graceful NA handling. Let's parameterize our target function `vectorAvg()`to accept a logical `na.rm` parameter which if TRUE removes all NAs before computing the mean, otherwise a `stop()` is issued.
+ 
+```{r}
+  vectorAvg <- function(x, na.rm = FALSE) {
+  x_avg <- numeric(0)
+ 
+  # Ensure correct input parameters are received
+  x_class <- class(x)
+  if ("integer" %in% x_class | "numeric" %in% x_class) {
+    num_na <- sum(is.na(x))
+    if (num_na > 0) {
+      if (na.rm == FALSE) {
+        stop("vectorAvg() - input has NAs, with na.rm = FALSE")
+      } else { # Remove NAs
+        nas_index <- which(is.na(x))
+        x <- x[-nas_index]
+      }
+    }
+   
+    # Calculate the mean and assign to x_avg
+    # Let's implement this by hand...
+    total <- 0
+    for (i in 1:length(x)) {
+      total <- total + x[i]
+    }
+    x_avg <- total/length(x)
+  } else {
+    stop(paste("vectorAvg() does not accept input of type", x_class))
+  }
+  return(x_avg)
+}
+```
+ 
+Now that our target function has implemented these new features, let's modify our unit test code to see if results are as expected. Examine the code below under section **### NEW CODE ###*** - we will inject some NAs into our vectors (via `mepapi::randomNAs()`) then make assertions on the results returned by `vectorAvg()`.
+ 
+```{r}
+testthat::test_that("vectorAvg", {
+  set.seed(1)
+ 
+  # Step - 1 of unit test: Create or load dummy data
+  int_vec <- 1:10
+  char_vec <- as.character(letters[1:10])
+  num_vec <- 1.1:10.1
+  logical_vec <- rep(c(TRUE, FALSE), 5)
+  factor_vec <- rep(c("foo", "bar"), 5)
+ 
+  # Step - 2 of unit test: call target and make assertions
+ 
+  # We expect integer and numeric vectors to return scalar numerics of length 1
+  expect_equal(length(vectorAvg(int_vec)), 1) # We should get a single value
+  expect_equal(length(vectorAvg(num_vec)), 1)
+ 
+  # We expect specfic values for above calls
+  expect_equal(vectorAvg(int_vec), 5.5) # mean(1:10) == 5.5
+  expect_equal(vectorAvg(num_vec), 5.6) # mean(1.1:10.1) == 5.6
+ 
+  # We expect errors for vectors of type : character, logical, factor
+  expect_error(vectorAvg(char_vec))
+  expect_error(vectorAvg(logical_vec))
+  expect_error(vectorAvg(factor_vec))
+ 
+  ### NEW CODE ###
+  # TESTING FOR PROPER NA HANDLING
+  int_vec <- mepapi::randomNAs(int_vec, perc_na = 0.2)
+  num_vec <- mepapi::randomNAs(num_vec, perc_na = 0.5)
+ 
+  # Since we randomly put in NAs we either need to inspect the vectors
+  # and compute the mean by hand, or dynamically compute the mean  and then
+  # compare with the results returned by `vectorAvg()`. The snippet below
+  # used the dynamic approach.
+ 
+  expected_int_avg <- mean(x = int_vec, na.rm = TRUE) # or hand compute
+  expected_num_avg <- mean(x = num_vec, na.rm = TRUE) # or hand compute
+ 
+  # If na.rm = TRUE, expect the correct values
+  expect_equal(expected_int_avg, vectorAvg(x = int_vec, na.rm = TRUE))
+  expect_equal(expected_num_avg, vectorAvg(x = num_vec, na.rm = TRUE))
+ 
+  # If na.rm = FALSE we should expect an error returns
+  expect_error(vectorAvg(x = int_vec, na.rm = FALSE))
+  expect_error(vectorAvg(x = num_vec, na.rm = FALSE))
+ 
+})
+```
+ 
+### Step-6 - Commit and push your code
+ 
+In the final step (duh), you need to put your code under version control. For more information on using git commands, please visit our github master [mep-docs](https://gecgithub01.walmart.com/MEP-MODELING/mep-docs.git) repo.
+This email and any files transmitted with it are confidential and intended solely for the individual or entity to whom they are addressed. If you have received this email in error destroy it immediately. *** Walmart Confidential ***

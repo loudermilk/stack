@@ -1,0 +1,14 @@
+Package: stack
+Type: Package
+Title: Analytics for stackexchange network
+Version: 0.1
+Date: 2016-05-31
+Author: Brandon C. Loudermilk
+Maintainer: Who to complain to <b.c.loudermilk@gmail.com>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+LazyData: TRUE
+Imports:
+  dplyr,
+  tm,
+  RMySQL

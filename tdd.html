@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Brandon C Loudermilk" />
+
+<meta name="date" content="2016-05-31" />
+
+<title>Unit Testing Tutorial</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div id="header">
+<h1 class="title">Unit Testing Tutorial</h1>
+<h4 class="author"><em>Brandon C Loudermilk</em></h4>
+<h4 class="date"><em>2016-05-31</em></h4>
+</div>
+
+
+<p><strong>Goal</strong>: In order to improve software quality, limit defects, and reduce development effort, the stack prject uses an engineering process called <a href="https://en.wikipedia.org/wiki/Test-driven_development">test-driven development (TDD)</a>. This vignette will teach you the basics of doing TDD for stack projects.</p>
+<p>TDD moves unit testing to the beginning of the SDLC, thus bugs are found and fixed early in the cycle, providing a reliable foundation of code upon which to build. Test-driven development relies upon a short development cycle with frequent repetitions.</p>
+<p>The key unit of TDD is the <strong>unit test</strong>. Martin Fowler enumerates the central constructs of unit tests:</p>
+<blockquote>
+<p>Firstly there is a notion that <strong>unit tests are low-level</strong>, focusing on a small part of the software system. Secondly unit tests are usually written these days by the programmers themselves using their regular tools - the only difference being the <strong>use of some sort of unit testing framework</strong>. Thirdly unit tests are expected to be <strong>significantly faster than other kinds of tests</strong>.</p>
+</blockquote>
+<p>As illustrated below, given a needed feature or bug fix (PR), (1) a developer writes a test case that will ensure that a target function works as intended (2) the developer writes a skeleton target function and confirms that the unit test fails. (3) Developer produces the minimum amount of code (i.e. the target function) to (4) pass that test. (5) Developer cleans up code, pushes code to their remote repository and issues a pull request to the master repo.</p>
+<div id="stack-unit-testing-overview" class="section level2">
+<h2>Stack Unit Testing Overview</h2>
+<p>In order to ensure the integrity and validity of our code base, all source code is accompanied by unit tests. Unit tests are scripts or functions (sometimes accompanied by a small data set) that evaluate individual functions to ensure they calculate and return the correct values or produce the desired side effects. Each R source file <strong>mep-foo-bar.R</strong> pushed to our repository should be accompanied by a corresponding unit testing script, <strong>test-mep-foo-bar.R</strong>. Ideally, we should have a test function for every function in the original source file, though in practice the ideal 1-to-1 correspondence is typically relaxed.</p>
+<p>In the following examples, we illustrate the tools, techniques, and procedures for writing unit tests for MEP modeling projects.</p>
+</div>
+<div id="getting-started---installing-mepapi-package" class="section level2">
+<h2>Getting Started - Installing mepapi package</h2>
+<div id="nb-testthat-and-tidyr-must-be-installed-prior-to-attempting-to-install-mepapi-package" class="section level4">
+<h4><strong>NB:</strong> <code>testthat</code> and <code>tidyr</code> <em>must</em> be installed prior to attempting to install <code>mepapi</code> package</h4>
+<p> </p>
+<ol style="list-style-type: decimal">
+<li>Download the latest <a href="https://gecgithub01.walmart.com/MEP-MODELING/mep-api">mepapi bundle</a> (preferred) OR fork and build the package from <a href="https://gecgithub01.walmart.com/MEP-MODELING/mep-model.git">source code in the mep-model repo</a>.</li>
+</ol>
+<p> </p>
+</div>
+<div id="be-sure-to-get-the-correctly-configured-.tar-file-click-on-the-.tar.gz-file-e.g.-mepapi_0.0.9.1.tar.gz-in-the-master-repo-then-click-on-view-raw.-this-will-start-the-download-of-the-proper-file." class="section level4">
+<h4>Be sure to get the correctly configured <code>.tar</code> file! Click on the <code>.tar.gz</code> file (e.g. “mepapi_0.0.9.1.tar.gz”) in the <a href="https://gecgithub01.walmart.com/MEP-MODELING/mep-api">master repo</a>, then click on <code>View Raw</code>. This will start the download of the proper file.</h4>
+<p> </p>
+<ol start="2" style="list-style-type: decimal">
+<li>Install package via <code>install.packages(&quot;/path/to/file/mepapi_0.0.3.tar.gz&quot;,repos = NULL, type=&quot;source&quot;)</code> &lt;- ensure latest version of <strong>mepapi</strong></li>
+</ol>
+<p> </p>
+</div>
+<div id="nb-please-use-.libpaths-to-see-where-r-installs-packages-by-default.-if-this-is-not-clearly-a-legitimate-folder-structure-due-to-your-vdi-configuration-e.g.something-like-vdiuserdataea01chste3my-documentsrwin-library3.2-you-should-create-a-folder-where-the-package-can-be-correctly-installed.-the-package-can-then-be-installed-there-by-specifying-the-lib-argument-e.g.-lib-ctoolboxrlibs-see-code-block-above.-you-should-then-add-this-to-the-paths-where-r-looks-for-installed-packages-.libpaths-c-.libpaths-ctoolboxrlibs-." class="section level4">
+<h4><strong>NB:</strong> Please use <code>.libPaths()</code> to see where R installs packages by default. If this is not clearly a legitimate folder structure due to your VDI configuration (e.g. something like <em>“\\vdiuserdata/ea01$/chste3/My Documents/R/win-library/3.2”</em>), you should create a folder where the package can be correctly installed. The package can then be installed there by specifying the <code>lib</code> argument, e.g. <code>lib = &quot;C:/toolbox/Rlibs&quot;</code> (see code block above). You should then add this to the paths where R looks for installed packages: <code>.libPaths( c( .libPaths(), &quot;C:/toolbox/Rlibs&quot;) )</code>.</h4>
+<p> </p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>Attach the package to your search path via <code>library(mepapi)</code> or explicitly call functions via <code>mepapi::fun()</code>.</p></li>
+<li><p>Launch the vignette from RStudio <code>vignette(&quot;mep-unit-testing&quot;, package=&quot;mepapi&quot;)</code></p></li>
+<li><p>To start developing unit tests, install the package <a href="https://github.com/hadley/testthat">testthat</a> and add it to your search path.</p></li>
+</ol>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(testthat)</code></pre>
+</div>
+</div>
+<div id="use-case-scenario-function-vectoravg" class="section level2">
+<h2>Use case scenario: function vectorAvg()</h2>
+<p>In this scenario, we are given the following requirement: write a function <code>vectorAvg</code> that take a numeric vector as input and which returns the average of those values. Yes, we could trivially accomplish this task by just using the function <code>base::mean()</code>, but for illustration purposes we will be writing our own function.</p>
+<div id="step-1---write-skeleton-target-function-and-initial-unit-test" class="section level3">
+<h3>Step-1 - Write skeleton target function and initial unit test</h3>
+<p>Using TDD principles, we will start by writing a skeleton target function, as illustrated in the code snipppet below. NB: to start with, we will just write a stub function that returns a default value numeric(0).</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># (Step-1a) Write skeleton stub target function</span>
+vectorAvg &lt;-<span class="st"> </span>function(x) {
+  x_avg &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class="dv">0</span>)
+ 
+  <span class="co"># Implementation code goes here</span>
+  <span class="co"># Calculate the mean and assign to x_avg</span>
+  <span class="kw">return</span>(x_avg)
+}</code></pre>
+<p>Now we need to write our unit test. Pulling up the help pages, to <code>testthat::test_that()</code> we observe that the function takes two parameters: <code>desc</code> a character description and <code>code</code> test code that contains expectations. For <code>desc</code> we pass in the name of the target function <strong>“vectorAvg”</strong> and for <code>code</code> we will write some R code with expectations that ensure the target function works properly. In the following sections we will illustrate each section of code independentally, concluding with a integrated, finalized, and deployable unit test function</p>
+<p>In writing unit tests, it is <em>extremely helpful</em> to use simple and small data structures that can be calculated by hand in order to craft the expectations. In this example, we will create 5 different vectors of varying classes.</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># (Step-1b) Write initial unit test</span>
+  <span class="co"># Set a seed for reproducibility if calling random functions</span>
+  <span class="kw">set.seed</span>(<span class="dv">15</span>)
+ 
+  <span class="co"># (Step-1b.1) of unit test: Create or load dummy data</span>
+  int_vec &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span>
+  char_vec &lt;-<span class="st"> </span><span class="kw">as.character</span>(letters[<span class="dv">1</span>:<span class="dv">10</span>])
+  num_vec &lt;-<span class="st"> </span><span class="fl">1.1</span>:<span class="fl">10.1</span>
+  logical_vec &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="ot">TRUE</span>, <span class="ot">FALSE</span>), <span class="dv">5</span>)
+  factor_vec &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span>), <span class="dv">5</span>)</code></pre>
+</div>
+<div id="step-2---run-test-confirm-fail" class="section level3">
+<h3>Step-2 - Run, test, confirm fail</h3>
+<p>Now that we’ve created the dummy vectors, all we need to do is to pass the vectors to the target function <code>vectorAvg()</code> and make assertions/expectations on the results. As illustrated below, the final part of our unit test function involves making assertions that the returned results are what we expected. Of course at this juncture, <strong>we expect our initial assertions to fail</strong>, because we still haven’t implemented the body of the target function <code>vectorAvg()</code> (i.e. we’ve only written a skeleton stub that returns numeric(0)).</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># (Step-2) Call target functions and confirm fail</span>
+  <span class="kw">expect_equal</span>(<span class="kw">length</span>(<span class="kw">vectorAvg</span>(int_vec)), <span class="dv">1</span>) <span class="co"># We should get a single value</span>
+  <span class="kw">expect_equal</span>(<span class="kw">vectorAvg</span>(int_vec), <span class="fl">5.5</span>) <span class="co"># mean(1:10) == 5.5</span>
+ 
+  <span class="co"># ...</span>
+  <span class="co"># ... more assertions/expections ...</span>
+  <span class="co"># ... yet more assertions/expectations ...</span></code></pre>
+</div>
+<div id="step-3---write-target-function" class="section level3">
+<h3>Step-3 - Write target function</h3>
+<p>At this juncture we need to start fleshing out our target function and implementing additional assertions in our unit test. Typically this is an iterative process (e.g., write a couple assertions, implement some target code, see if the assertions pass as expected, then repeat).</p>
+<p>Let’s start by implementing the actual average computation as well as making our target function more robust. When finished, our target function should return the mean for integer/numeric vectors and should issue a <code>stop()</code> for all other input types.</p>
+<pre class="sourceCode r"><code class="sourceCode r">vectorAvg &lt;-<span class="st"> </span>function(x) {
+  x_avg &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class="dv">0</span>)
+ 
+  <span class="co"># Ensure correct input parameters are received</span>
+  x_class &lt;-<span class="st"> </span><span class="kw">class</span>(x)
+  if (<span class="st">&quot;integer&quot;</span> %in%<span class="st"> </span>x_class |<span class="st"> &quot;numeric&quot;</span> %in%<span class="st"> </span>x_class) {
+    <span class="co"># Calculate the mean and assign to x_avg</span>
+    <span class="co"># Let's implement this by hand...</span>
+    total &lt;-<span class="st"> </span><span class="dv">0</span>
+    for (i in <span class="dv">1</span>:<span class="kw">length</span>(x)) {
+      total &lt;-<span class="st"> </span>total +<span class="st"> </span>x[i]
+    }
+    x_avg &lt;-<span class="st"> </span>total/<span class="kw">length</span>(x)
+  } else {
+    <span class="kw">stop</span>(<span class="kw">paste</span>(<span class="st">&quot;vectorAvg() does not accept input of type&quot;</span>, x_class))
+  }
+  <span class="kw">return</span>(x_avg)
+}</code></pre>
+</div>
+<div id="step-4---does-unit-test-pass" class="section level3">
+<h3>Step-4 - Does unit test pass?</h3>
+<p>With the target function in its current state, we should expect the following to pass:</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Step - 1 of unit test: Create or load dummy data</span>
+  int_vec &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span>
+  char_vec &lt;-<span class="st"> </span><span class="kw">as.character</span>(letters[<span class="dv">1</span>:<span class="dv">10</span>])
+  num_vec &lt;-<span class="st"> </span><span class="fl">1.1</span>:<span class="fl">10.1</span>
+  logical_vec &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="ot">TRUE</span>, <span class="ot">FALSE</span>), <span class="dv">5</span>)
+  factor_vec &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span>), <span class="dv">5</span>)
+ 
+  <span class="co"># Step - 2 of unit test: call target and make assertions</span>
+ 
+  <span class="co"># We expect integer and numeric vectors to return scalar numerics of length 1</span>
+  <span class="kw">expect_equal</span>(<span class="kw">length</span>(<span class="kw">vectorAvg</span>(int_vec)), <span class="dv">1</span>) <span class="co"># We should get a single value</span>
+  <span class="kw">expect_equal</span>(<span class="kw">length</span>(<span class="kw">vectorAvg</span>(num_vec)), <span class="dv">1</span>)
+ 
+  <span class="co"># We expect specfic values for above calls</span>
+  <span class="kw">expect_equal</span>(<span class="kw">vectorAvg</span>(int_vec), <span class="fl">5.5</span>) <span class="co"># mean(1:10) == 5.5</span>
+  <span class="kw">expect_equal</span>(<span class="kw">vectorAvg</span>(num_vec), <span class="fl">5.6</span>) <span class="co"># mean(1.1:10.1) == 5.6</span>
+ 
+  <span class="co"># We expect errors for vectors of type : character, logical, factor</span>
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(char_vec))
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(logical_vec))
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(factor_vec))</code></pre>
+<p><strong>W00t!!!</strong> - All of our assertions/expectations pass! At this point, let’s wrap up all our code as a single block and pass it to function <code>testthat::test_that(desc, code)</code>, which takes as input parameters: <code>desc</code> a character string (representing the name of the target function e.g., “vectorAvg”), and <code>code</code> a block of code the creates dummy, passes it to the target function, and then makes assertions about the expected results.</p>
+<pre class="sourceCode r"><code class="sourceCode r">testthat::<span class="kw">test_that</span>(<span class="st">&quot;vectorAvg&quot;</span>, {
+      <span class="co"># Step - 1 of unit test: Create or load dummy data</span>
+  int_vec &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span>
+  char_vec &lt;-<span class="st"> </span><span class="kw">as.character</span>(letters[<span class="dv">1</span>:<span class="dv">10</span>])
+  num_vec &lt;-<span class="st"> </span><span class="fl">1.1</span>:<span class="fl">10.1</span>
+  logical_vec &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="ot">TRUE</span>, <span class="ot">FALSE</span>), <span class="dv">5</span>)
+  factor_vec &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span>), <span class="dv">5</span>)
+ 
+  <span class="co"># Step - 2 of unit test: call target and make assertions</span>
+ 
+  <span class="co"># We expect integer and numeric vectors to return scalar numerics of length 1</span>
+  <span class="kw">expect_equal</span>(<span class="kw">length</span>(<span class="kw">vectorAvg</span>(int_vec)), <span class="dv">1</span>) <span class="co"># We should get a single value</span>
+  <span class="kw">expect_equal</span>(<span class="kw">length</span>(<span class="kw">vectorAvg</span>(num_vec)), <span class="dv">1</span>)
+ 
+  <span class="co"># We expect specfic values for above calls</span>
+  <span class="kw">expect_equal</span>(<span class="kw">vectorAvg</span>(int_vec), <span class="fl">5.5</span>) <span class="co"># mean(1:10) == 5.5</span>
+  <span class="kw">expect_equal</span>(<span class="kw">vectorAvg</span>(num_vec), <span class="fl">5.6</span>) <span class="co"># mean(1.1:10.1) == 5.6</span>
+ 
+  <span class="co"># We expect errors for vectors of type : character, logical, factor</span>
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(char_vec))
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(logical_vec))
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(factor_vec))
+})</code></pre>
+</div>
+<div id="step-5---clean-up-code-and-ensure-corner-case-coverage" class="section level3">
+<h3>Step-5 - Clean up code and ensure corner case coverage</h3>
+<p>By this point we have created a minimal unit test for our target function <code>vectorAvg()</code>. However, closer inspection reveals that our target function may need additional functionality, perhaps in how it handles NAs. For example, in the current implementation calling <code>vectorAvg(c(1:9), NA)</code> will return NA, which may be undesired behavior from an architectural perspective.</p>
+<pre class="sourceCode r"><code class="sourceCode r">  bad_vec &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">9</span>, <span class="ot">NA</span>)
+  <span class="kw">vectorAvg</span>(bad_vec)</code></pre>
+<pre><code>## [1] NA</code></pre>
+<p>In this use case, let’s suppose that our requirements require more graceful NA handling. Let’s parameterize our target function <code>vectorAvg()</code>to accept a logical <code>na.rm</code> parameter which if TRUE removes all NAs before computing the mean, otherwise a <code>stop()</code> is issued.</p>
+<pre class="sourceCode r"><code class="sourceCode r">  vectorAvg &lt;-<span class="st"> </span>function(x, <span class="dt">na.rm =</span> <span class="ot">FALSE</span>) {
+  x_avg &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class="dv">0</span>)
+ 
+  <span class="co"># Ensure correct input parameters are received</span>
+  x_class &lt;-<span class="st"> </span><span class="kw">class</span>(x)
+  if (<span class="st">&quot;integer&quot;</span> %in%<span class="st"> </span>x_class |<span class="st"> &quot;numeric&quot;</span> %in%<span class="st"> </span>x_class) {
+    num_na &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="kw">is.na</span>(x))
+    if (num_na &gt;<span class="st"> </span><span class="dv">0</span>) {
+      if (na.rm ==<span class="st"> </span><span class="ot">FALSE</span>) {
+        <span class="kw">stop</span>(<span class="st">&quot;vectorAvg() - input has NAs, with na.rm = FALSE&quot;</span>)
+      } else { <span class="co"># Remove NAs</span>
+        nas_index &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">is.na</span>(x))
+        x &lt;-<span class="st"> </span>x[-nas_index]
+      }
+    }
+   
+    <span class="co"># Calculate the mean and assign to x_avg</span>
+    <span class="co"># Let's implement this by hand...</span>
+    total &lt;-<span class="st"> </span><span class="dv">0</span>
+    for (i in <span class="dv">1</span>:<span class="kw">length</span>(x)) {
+      total &lt;-<span class="st"> </span>total +<span class="st"> </span>x[i]
+    }
+    x_avg &lt;-<span class="st"> </span>total/<span class="kw">length</span>(x)
+  } else {
+    <span class="kw">stop</span>(<span class="kw">paste</span>(<span class="st">&quot;vectorAvg() does not accept input of type&quot;</span>, x_class))
+  }
+  <span class="kw">return</span>(x_avg)
+}</code></pre>
+<p>Now that our target function has implemented these new features, let’s modify our unit test code to see if results are as expected. Examine the code below under section <strong>### NEW CODE ###</strong>* - we will inject some NAs into our vectors (via <code>mepapi::randomNAs()</code>) then make assertions on the results returned by <code>vectorAvg()</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">testthat::<span class="kw">test_that</span>(<span class="st">&quot;vectorAvg&quot;</span>, {
+  <span class="kw">set.seed</span>(<span class="dv">1</span>)
+ 
+  <span class="co"># Step - 1 of unit test: Create or load dummy data</span>
+  int_vec &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span>
+  char_vec &lt;-<span class="st"> </span><span class="kw">as.character</span>(letters[<span class="dv">1</span>:<span class="dv">10</span>])
+  num_vec &lt;-<span class="st"> </span><span class="fl">1.1</span>:<span class="fl">10.1</span>
+  logical_vec &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="ot">TRUE</span>, <span class="ot">FALSE</span>), <span class="dv">5</span>)
+  factor_vec &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span>), <span class="dv">5</span>)
+ 
+  <span class="co"># Step - 2 of unit test: call target and make assertions</span>
+ 
+  <span class="co"># We expect integer and numeric vectors to return scalar numerics of length 1</span>
+  <span class="kw">expect_equal</span>(<span class="kw">length</span>(<span class="kw">vectorAvg</span>(int_vec)), <span class="dv">1</span>) <span class="co"># We should get a single value</span>
+  <span class="kw">expect_equal</span>(<span class="kw">length</span>(<span class="kw">vectorAvg</span>(num_vec)), <span class="dv">1</span>)
+ 
+  <span class="co"># We expect specfic values for above calls</span>
+  <span class="kw">expect_equal</span>(<span class="kw">vectorAvg</span>(int_vec), <span class="fl">5.5</span>) <span class="co"># mean(1:10) == 5.5</span>
+  <span class="kw">expect_equal</span>(<span class="kw">vectorAvg</span>(num_vec), <span class="fl">5.6</span>) <span class="co"># mean(1.1:10.1) == 5.6</span>
+ 
+  <span class="co"># We expect errors for vectors of type : character, logical, factor</span>
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(char_vec))
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(logical_vec))
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(factor_vec))
+ 
+  ### NEW CODE ###
+  <span class="co"># TESTING FOR PROPER NA HANDLING</span>
+  int_vec &lt;-<span class="st"> </span>mepapi::<span class="kw">randomNAs</span>(int_vec, <span class="dt">perc_na =</span> <span class="fl">0.2</span>)
+  num_vec &lt;-<span class="st"> </span>mepapi::<span class="kw">randomNAs</span>(num_vec, <span class="dt">perc_na =</span> <span class="fl">0.5</span>)
+ 
+  <span class="co"># Since we randomly put in NAs we either need to inspect the vectors</span>
+  <span class="co"># and compute the mean by hand, or dynamically compute the mean  and then</span>
+  <span class="co"># compare with the results returned by `vectorAvg()`. The snippet below</span>
+  <span class="co"># used the dynamic approach.</span>
+ 
+  expected_int_avg &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="dt">x =</span> int_vec, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="co"># or hand compute</span>
+  expected_num_avg &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="dt">x =</span> num_vec, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="co"># or hand compute</span>
+ 
+  <span class="co"># If na.rm = TRUE, expect the correct values</span>
+  <span class="kw">expect_equal</span>(expected_int_avg, <span class="kw">vectorAvg</span>(<span class="dt">x =</span> int_vec, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))
+  <span class="kw">expect_equal</span>(expected_num_avg, <span class="kw">vectorAvg</span>(<span class="dt">x =</span> num_vec, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))
+ 
+  <span class="co"># If na.rm = FALSE we should expect an error returns</span>
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(<span class="dt">x =</span> int_vec, <span class="dt">na.rm =</span> <span class="ot">FALSE</span>))
+  <span class="kw">expect_error</span>(<span class="kw">vectorAvg</span>(<span class="dt">x =</span> num_vec, <span class="dt">na.rm =</span> <span class="ot">FALSE</span>))
+ 
+})</code></pre>
+</div>
+<div id="step-6---commit-and-push-your-code" class="section level3">
+<h3>Step-6 - Commit and push your code</h3>
+<p>In the final step (duh), you need to put your code under version control. For more information on using git commands, please visit our github master <a href="https://gecgithub01.walmart.com/MEP-MODELING/mep-docs.git">mep-docs</a> repo. This email and any files transmitted with it are confidential and intended solely for the individual or entity to whom they are addressed. If you have received this email in error destroy it immediately. *** Walmart Confidential ***</p>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
