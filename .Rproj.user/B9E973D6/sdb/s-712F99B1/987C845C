@@ -1,0 +1,17 @@
+{
+    "contents" : "library(testthat)\n\n#test package actually seems to work\n\n#test_package(\"mepapi\")\ntest_check(\"stack\")\n",
+    "created" : 1464893180316.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "72759355",
+    "id" : "987C845C",
+    "lastKnownWriteTime" : 1464893298,
+    "path" : "~/repo/stack/tests/testthat.R",
+    "project_path" : "tests/testthat.R",
+    "properties" : {
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
