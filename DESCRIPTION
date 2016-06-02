@@ -1,11 +1,11 @@
 Package: stack
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Stackexchange Analytics
 Version: 0.1
 Date: 2016-06-02
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: Brandon C. Loudermilk
+Maintainer: Brandon C. Loudermilk <b.c.loudermilk@gmail.com>
+Description: Package for user/question collaborative filters
 License: What license is it under?
 LazyData: TRUE
 Imports:
