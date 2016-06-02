@@ -12,14 +12,14 @@ source("R/stack-xml.R")
 source("R/stack-mysql.R")
 
 #' @title SE - StackExchange structure containing file_name reference and reader.
-SE <- list(Tags = list(file_name = "data/Tags.xml", reader = readStackXMLTags),
-           Users = list(file_name = "data/Users.xml", reader = readStackXMLUsers),
-           Posts = list(file_name = "data/Posts.xml", reader = readStackXMLPosts),
-           Comments = list(file_name = "data/Comments.xml", reader = readStackXMLComments),
-           Votes = list(file_name = "data/Votes.xml", reader = readStackXMLVotes),
-           PostLinks = list(file_name = "data/PostLinks.xml", reader = readStackXMLPostLinks),
-           PostHistorys = list(file_name = "data/PostHistory.xml", reader = readStackXMLPostHistorys),
-           Badges = list(file_name = "data/Badges.xml", reader = readStackXMLBadges))
+SE <- list(Tags = list(file_name = "se-data/Tags.xml", reader = readStackXMLTags),
+           Users = list(file_name = "se-data/Users.xml", reader = readStackXMLUsers),
+           Posts = list(file_name = "se-data/Posts.xml", reader = readStackXMLPosts),
+           Comments = list(file_name = "se-data/Comments.xml", reader = readStackXMLComments),
+           Votes = list(file_name = "se-data/Votes.xml", reader = readStackXMLVotes),
+           PostLinks = list(file_name = "se-data/PostLinks.xml", reader = readStackXMLPostLinks),
+           PostHistorys = list(file_name = "se-data/PostHistory.xml", reader = readStackXMLPostHistorys),
+           Badges = list(file_name = "se-data/Badges.xml", reader = readStackXMLBadges))
 
 
 
@@ -44,10 +44,10 @@ newSECorpus <- function(type) {
 #'
 createCorpus <- function(file_name, reader) {
   mySource <- function(x){
-    XMLSource(x, function(tree) XML::xmlChildren(XML::xmlRoot(tree)),
+    tm::XMLSource(x, function(tree) XML::xmlChildren(XML::xmlRoot(tree)),
               reader)
   }
-  corpus <- VCorpus(mySource(file_name))
+  corpus <- tm::VCorpus(mySource(file_name))
   return(corpus)
 }
 

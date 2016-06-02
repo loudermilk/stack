@@ -1,20 +1,24 @@
 ## stack-xml.R
-## 
-## Defines the XML structure and corresponding reader for 
+##
+## Defines the XML structure and corresponding reader for
 ## stackexchange data source files (*.xml):
 ## Votes.xml
 ## Users.xml (has Content)
-## Tags.xml 
+## Tags.xml
 ## Posts.xml (has Content)
-## PostLinks.xml 
-## PostHistorys.xml (has Content) 
+## PostLinks.xml
+## PostHistorys.xml (has Content)
 ## Comments.xml (has Content)
 ## Badges.xml
 ##
 
+library(tm)
+
 ##################################################################################
 ## TAGS
 ##################################################################################
+
+
 
 StackXMLSpecTag <-
   list(Id = list("attribute", "/row/@Id"),
@@ -25,7 +29,7 @@ StackXMLSpecTag <-
 
 
 readStackXMLTags <-
-  readXML(spec = c(StackXMLSpecTag), 
+  readXML(spec = c(StackXMLSpecTag),
           doc = PlainTextDocument())
 
 
@@ -44,7 +48,7 @@ StackXMLSpecComment <-
 
 readStackXMLComments <-
   readXML(spec = c(StackXMLSpecComment,
-                   list(content=list("attribute", "/row/@Text"))), 
+                   list(content=list("attribute", "/row/@Text"))),
           doc = PlainTextDocument())
 
 
@@ -72,7 +76,7 @@ StackXMLSpecPost <-
 #AcceptedAnswerId
 readStackXMLPosts <-
   readXML(spec = c(StackXMLSpecPost,
-                   list(content=list("attribute", "/row/@Body"))), 
+                   list(content=list("attribute", "/row/@Body"))),
           doc = PlainTextDocument())
 
 ##################################################################################
@@ -96,7 +100,7 @@ StackXMLSpecUser <-
 
 readStackXMLUsers <-
   readXML(spec = c(StackXMLSpecUser,
-                   list(content=list("attribute", "/row/@AboutMe"))), 
+                   list(content=list("attribute", "/row/@AboutMe"))),
           doc = PlainTextDocument())
 
 ##################################################################################
@@ -111,7 +115,7 @@ StackXMLSpecVote <-
 
 
 readStackXMLVotes <-
-  readXML(spec = c(StackXMLSpecVote), 
+  readXML(spec = c(StackXMLSpecVote),
           doc = PlainTextDocument())
 
 
@@ -128,7 +132,7 @@ StackXMLSpecPostLink <-
 
 
 readStackXMLPostLinks <-
-  readXML(spec = c(StackXMLSpecPostLink), 
+  readXML(spec = c(StackXMLSpecPostLink),
           doc = PlainTextDocument())
 
 
@@ -147,7 +151,7 @@ StackXMLSpecPostHistory <-
 
 readStackXMLPostHistorys <-
   readXML(spec = c(StackXMLSpecPostHistory,
-                   list(content=list("attribute", "/row/@Text"))), 
+                   list(content=list("attribute", "/row/@Text"))),
           doc = PlainTextDocument())
 
 ##################################################################################
@@ -164,7 +168,7 @@ StackXMLSpecBadge <-
 
 
 readStackXMLBadges <-
-  readXML(spec = c(StackXMLSpecBadge), 
+  readXML(spec = c(StackXMLSpecBadge),
           doc = PlainTextDocument())
 
 
@@ -179,5 +183,5 @@ StackXMLSpecFoo <-
 
 #AcceptedAnswerId
 readStackXMLFoos <-
-  readXML(spec = c(StackXMLSpecFoo), 
+  readXML(spec = c(StackXMLSpecFoo),
           doc = PlainTextDocument())

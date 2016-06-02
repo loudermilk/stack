@@ -1,0 +1,17 @@
+{
+    "contents" : "Package: stack\nType: Package\nTitle: What the Package Does (Title Case)\nVersion: 0.1\nDate: 2016-06-02\nAuthor: Who wrote it\nMaintainer: Who to complain to <yourfault@somewhere.net>\nDescription: More about what it does (maybe more than one line)\nLicense: What license is it under?\nLazyData: TRUE\nImports:\n  dplyr,\n  tm,\n  RMySQL\n",
+    "created" : 1464881181057.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "253489397",
+    "id" : "B4083B5E",
+    "lastKnownWriteTime" : 1464881414,
+    "path" : "~/repo/stack/DESCRIPTION",
+    "project_path" : "DESCRIPTION",
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "type" : "dcf"
+}
