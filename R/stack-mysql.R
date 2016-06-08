@@ -48,7 +48,8 @@ createStackExchangeSQLTables <- function() {
 
   #' @title Default connection to MySQL
   #' @description manually code fields below to your setup
-  DEF_CONNECTION <- dbConnect(MySQL(),
+  #' !! WARNING !!- hard-codes need to be parameterized
+  DEF_CONNECTION <<- dbConnect(MySQL(),
                               user = 'brandon',
                               password = 'password',
                               host = 'localhost',
@@ -111,6 +112,11 @@ doDBStuff <- function(){
           AND p.OwnerUserId=u.Id;"
 
   q <- "SELECT p.ParentId FROM Posts as p WHERE p.ParentId='7'"
+
+
+  ## PR-3 : create sql query to retreive questions and answers
+  q <- "SELECT Id, OwnerUserId FROM Posts WHERE PostTypeId='1' AND Id=7 LIMIT 10;"
+
 
   res <- dbSendQuery(DEF_CONNECTION, q)
   dbFetch(res)
