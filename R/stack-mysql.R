@@ -115,8 +115,11 @@ doDBStuff <- function(){
 
 
   ## PR-3 : create sql query to retreive questions and answers
+  ## Going to create two different queries:
+  ## QUESTIONS
   q <- "SELECT Id, OwnerUserId FROM Posts WHERE PostTypeId='1' AND Id=7 LIMIT 10;"
-
+  ## RESPONSES
+  q <- "SELECT Id, ParentId, OwnerUserId FROM Posts WHERE ParentId=7;"
 
   res <- dbSendQuery(DEF_CONNECTION, q)
   dbFetch(res)
