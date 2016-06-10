@@ -75,18 +75,16 @@ searchCorpus <- function(corpus, attribute, value){
 #' @title Create data.frame of meta data from corpus
 #' @param corpus
 #' @return data.frame
+#' @notes there is a ton of stuff that can be optimized
+#' here (i.e. uber slow and inefficient), but for now
+#' "pre-mature optimization is the root of all that is evil
+#' in computer science" to paraphases Dr. Knuth.
 #'
 corpusToDF <- function(corpus, add_content = FALSE) {
   last <- length(corpus)
 
-  # assume that the doc with most meta info has *all* the meta info
-  # get list of number of meta entries
-  ll <- sapply(corpus, function(d) length(unlist(meta(d))))
-  indices <- which(max(ll) == ll)
-  ref_index <- indices[1]
-
   ## BEGIN - alternative approach to df constructor
-  dd <- sapply(corpus, function(d) unlist(meta(d)))
+  dd <- lapply(corpus, function(d) unlist(meta(d)))
   d1 <- unlist(dd)
   fields <- unique(names(d1))
 
@@ -96,61 +94,36 @@ corpusToDF <- function(corpus, add_content = FALSE) {
     strip_fields <- c(strip_fields, substr(f, pos[[1]][2] + 1, nchar(f)))
   }
 
-
+  out_list <- list()
   for (i in 1:last) {
     doc <- corpus[[i]]
     m <- meta(doc)
-    #char_vec <- unlist(m)
     out_row <- list()
     for (s in strip_fields) {
       out_row[[s]] <- NA
       val <- m[[s]]
-      if (!is.null(val)) {
+      if (length(val) != 0) {
         out_row[[s]] <- val
       }
     }
-  }
-  # TODO ^^ add up out_rows into a df
-
-
-  ## END - alt approach
-
-
-  ## determine number of columns
-  ref_doc <- corpus[[ref_index]] # has most meta-data
-
-  master_vec <- unlist(meta(ref_doc))
-  meta_col_headers <- names(master_vec)
-  meta_list <- list()
-  for (i in 1:last) {
-    doc <- corpus[[i]]
-    m <- meta(doc)
-    char_vec <- unlist(m)
-
-    ## normalize char_vec according to master_vec
-    new_vec <- master_vec
-    new_vec[1:length(new_vec)] <- NA
-    for (j in 1:length(char_vec)) {
-      n <- names(char_vec[j])[1]
-      v <- char_vec[j]
-      new_vec[n] <- v
-    }
-
     if (add_content){
       content <- content(doc)
       if (length(content) > 0) {
-        new_vec["Content"] <- content
+        out_row["Content"] <- content
       } else {
-        new_vec["Content"] <- NA
+        out_row["Content"] <- NA
       }
     }
-
-    meta_list[[i]] <- new_vec
+    out_list[[i]] <- data.frame(out_row)
   }
 
-  df <- t(data.frame(meta_list))
-  names(df) <- meta_col_headers
-  df <- as.data.frame(df)
+  ## Build the data.frame (needs to be optimized)
+  df <- data.frame(out_list[[1]])
+  for (j in 2:length(out_list)) {
+    new_df <- data.frame(out_list[[j]])
+    df <- rbind(df, new_df)
+  }
+
   return(df)
 }
 
