@@ -60,6 +60,7 @@ StackXMLSpecPost <-
   list(Id = list("attribute", "/row/@Id"),
        PostTypeId = list("attribute", "/row/@PostTypeId"),
        AcceptedAnswerId = list("attribute", "/row/@AcceptedAnswerId"),
+       ParentId = list("attribute","/row/@ParentId"),
        CreationDate = list("attribute","/row/@CreationDate"),
        Score = list("attribute", "/row/@Score"),
        ViewCount = list("attribute", "/row/@ViewCount"),

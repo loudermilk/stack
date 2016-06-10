@@ -44,8 +44,7 @@ newSECorpus <- function(type) {
 #'
 createCorpus <- function(file_name, reader) {
   mySource <- function(x){
-    tm::XMLSource(x, function(tree) XML::xmlChildren(XML::xmlRoot(tree)),
-              reader)
+    tm::XMLSource(x, function(tree) XML::xmlChildren(XML::xmlRoot(tree)), reader)
   }
   corpus <- tm::VCorpus(mySource(file_name))
   return(corpus)
@@ -85,6 +84,37 @@ corpusToDF <- function(corpus, add_content = FALSE) {
   ll <- sapply(corpus, function(d) length(unlist(meta(d))))
   indices <- which(max(ll) == ll)
   ref_index <- indices[1]
+
+  ## BEGIN - alternative approach to df constructor
+  dd <- sapply(corpus, function(d) unlist(meta(d)))
+  d1 <- unlist(dd)
+  fields <- unique(names(d1))
+
+  strip_fields <- c()
+  for (f in fields) {
+    pos <- gregexpr('\\.', f)
+    strip_fields <- c(strip_fields, substr(f, pos[[1]][2] + 1, nchar(f)))
+  }
+
+
+  for (i in 1:last) {
+    doc <- corpus[[i]]
+    m <- meta(doc)
+    #char_vec <- unlist(m)
+    out_row <- list()
+    for (s in strip_fields) {
+      out_row[[s]] <- NA
+      val <- m[[s]]
+      if (!is.null(val)) {
+        out_row[[s]] <- val
+      }
+    }
+  }
+  # TODO ^^ add up out_rows into a df
+
+
+  ## END - alt approach
+
 
   ## determine number of columns
   ref_doc <- corpus[[ref_index]] # has most meta-data
