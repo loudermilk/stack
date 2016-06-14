@@ -62,10 +62,29 @@ createStackExchangeSQLTables <- function() {
   #' a data.frame which is used to generate the
   #' SQL table
   newSQLTable <- function(type) {
+    cleanFun <- function(htmlString) {
+      return(gsub("<.*?>", "", htmlString))
+    }
+
     print(paste("Creating table...", type))
     corpus <- newSECorpus(type)
+    print("Removing whitespace...")
+    corpus <- tm::tm_map(corpus, tm::stripWhitespace)
+    print("Scrubbing html...")
+    corpus <- tm::tm_map(corpus, tm::content_transformer(cleanFun))
+    print("To lowercase...")
+    corpus <- tm::tm_map(corpus, tm::content_transformer(tolower))
+    print("Removing numbers...")
+    corpus <- tm::tm_map(corpus, tm::content_transformer(tm::removeNumbers))
+    print("Removing punctuation") #removePunctuation
+    corpus <- tm::tm_map(corpus, tm::content_transformer(tm::removePunctuation))
     if (type %in% c("Comments", "Posts", "Users", "PostHistorys")) {
+      dtm <- tm::DocumentTermMatrix(corpus)
+      m <- as.matrix(dtm)
+      bow_df <- as.data.frame(m)
+      names(bow_df) <- paste0("has_", names(bow_df))
       data <- corpusToDF(corpus, add_content = TRUE)
+      data <- cbind(data, bow_df)
     } else {
       data <- corpusToDF(corpus)
     }
@@ -120,6 +139,9 @@ doDBStuff <- function(){
   q <- "SELECT Id, OwnerUserId FROM Posts WHERE PostTypeId='1' AND Id=7 LIMIT 10;"
   ## RESPONSES
   q <- "SELECT Id, ParentId, OwnerUserId FROM Posts WHERE ParentId=7;"
+
+  q <- "SELECT Id, ParentId, OwnerUserId FROM Posts WHERE ParentId=7 OR Id=7"
+
 
   res <- dbSendQuery(DEF_CONNECTION, q)
   dbFetch(res)

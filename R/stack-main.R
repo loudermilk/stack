@@ -142,6 +142,14 @@ corpusToDF <- function(corpus, add_content = FALSE) {
   return(df)
 }
 
+#' @title create bag of words data.frame
+#' @param df data.frame
+#' @param content_col character name of content column
+#' @return data.frame
+generateBagOfWords <- function(df, content_col = "Content") {
+
+}
+
 
 
 # searchCorpus(corpus, attribute, value)
