@@ -78,13 +78,35 @@ createStackExchangeSQLTables <- function() {
     corpus <- tm::tm_map(corpus, tm::content_transformer(tm::removeNumbers))
     print("Removing punctuation") #removePunctuation
     corpus <- tm::tm_map(corpus, tm::content_transformer(tm::removePunctuation))
+    print("Removing stop words")
+    corpus <- tm::tm_map(corpus, tm::removeWords, tm::stopwords('english'))
+
     if (type %in% c("Comments", "Posts", "Users", "PostHistorys")) {
       dtm <- tm::DocumentTermMatrix(corpus)
       m <- as.matrix(dtm)
       bow_df <- as.data.frame(m)
+
+      ## Start PR-21 - (remove hapaxes)
+      col_sums <- apply(bow_df, 2, sum) ## count ocurrences of word features
+      non_hapax_index <- col_sums > 3 ## that have freq higher than three
+      bow_df <- bow_df[,non_hapax_index] ## only select high freq columns
+      ## End PR-21
+
+
+      ## Start PR-17 - (remove non-Roman words features)
+      names <- names(bow_df)
+      # Then find indices of words with non-ASCII characters using ICONV
+      characters.non.ASCII <- grep("names",
+                                   iconv(names, "latin1", "ASCII", sub="characters.unlist"))
+      # subset original vector of words to exclude words with non-ASCII characters
+      bow_df <- bow_df[,-characters.non.ASCII]
+      ## End PR-17
+
       names(bow_df) <- paste0("has_", names(bow_df))
       data <- corpusToDF(corpus, add_content = TRUE)
       data <- cbind(data, bow_df)
+
+      data <- data[, nchar(names(data)) < 30] #filter out long names (b/c MySQL)
     } else {
       data <- corpusToDF(corpus)
     }
